@@ -33,8 +33,8 @@
 
   <header>
     <div class="masjid-info">
-      <h1 id="disp-nama-masjid">MASJID AL-IKHLAS</h1>
-      <p id="disp-alamat-masjid">Jl. Merdeka No. 45, Jakarta</p>
+      <h1 id="disp-nama-masjid">MEMUAT NAMA MASJID...</h1>
+      <p id="disp-alamat-masjid">Memuat alamat...</p>
     </div>
     <div class="clock-box">
       <div id="clock">00:00:00</div>
@@ -75,11 +75,10 @@
   </div>
 
   <footer>
-    <div class="marquee" id="disp-running-text">Selamat datang di Masjid.</div>
+    <div class="marquee" id="disp-running-text">Memuat running text...</div>
   </footer>
 
   <script>
-    // KUNCI DATABASE CLOUD MILIK KAKAK
     const BIN_ID = "6ac5370aac6210605a19fc45";
     const API_KEY = "$2a$10$bgwctqMgKxeqMN44zFlbWuExKVmzYKJ/18JKAttoeljXcYcDKaoiq";
 
@@ -99,36 +98,35 @@
       slides[currentSlide].classList.add('active');
     }, 8000);
 
-    // Fungsi Mengambil Data Otomatis dari Cloud JSONBin
+    // Ambil Data dari JSONBin Cloud
     async function fetchCloudData() {
       try {
         const response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
-          headers: { "X-Master-Key": API_KEY }
+          headers: { 
+            "X-Master-Key": API_KEY,
+            "X-Bin-Meta": "false"
+          }
         });
-        const result = await response.json();
-        const data = result.record;
+        const data = await response.json();
 
-        if (data && data.namaMasjid) {
-          document.getElementById('disp-nama-masjid').innerText = data.namaMasjid;
-          document.getElementById('disp-alamat-masjid').innerText = data.alamatMasjid;
-          document.getElementById('disp-khatib').innerText = data.khatib;
-          document.getElementById('disp-imam').innerText = data.imam;
-          document.getElementById('disp-muadzin').innerText = data.muadzin;
-          document.getElementById('disp-pemasukan').innerText = data.pemasukan;
-          document.getElementById('disp-pengeluaran').innerText = data.pengeluaran;
-          document.getElementById('disp-saldo').innerText = data.saldo;
-          document.getElementById('disp-himbauan').innerText = data.himbauan;
-          document.getElementById('disp-running-text').innerText = data.runningText;
+        if (data) {
+          document.getElementById('disp-nama-masjid').innerText = data.namaMasjid || "MASJID AL-IKHLAS";
+          document.getElementById('disp-alamat-masjid').innerText = data.alamatMasjid || "-";
+          document.getElementById('disp-khatib').innerText = data.khatib || "-";
+          document.getElementById('disp-imam').innerText = data.imam || "-";
+          document.getElementById('disp-muadzin').innerText = data.muadzin || "-";
+          document.getElementById('disp-pemasukan').innerText = data.pemasukan || "-";
+          document.getElementById('disp-pengeluaran').innerText = data.pengeluaran || "-";
+          document.getElementById('disp-saldo').innerText = data.saldo || "-";
+          document.getElementById('disp-himbauan').innerText = data.himbauan || "-";
+          document.getElementById('disp-running-text').innerText = data.runningText || "-";
         }
       } catch (err) {
         console.error("Gagal mengambil data cloud:", err);
       }
     }
 
-    // Jalankan saat pertama kali halaman dibuka
     fetchCloudData();
-
-    // Otomatis periksa & sinkronkan data baru setiap 5 detik
     setInterval(fetchCloudData, 5000);
   </script>
 </body>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - Masjid</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+    body { background-color: #f1f5f9; padding: 20px; color: #334155; }
+    .container { max-width: 600px; margin: 0 auto; background: #ffffff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+    h2 { color: #0284c7; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
+    .form-group { margin-bottom: 15px; }
+    label { display: block; font-weight: 600; margin-bottom: 5px; font-size: 0.9rem; }
+    input[type="text"], textarea { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 1rem; }
+    textarea { height: 80px; resize: vertical; }
+    button { width: 100%; padding: 12px; background-color: #0284c7; color: white; border: none; border-radius: 6px; font-size: 1rem; font-weight: bold; cursor: pointer; margin-top: 10px; }
+    button:disabled { background-color: #94a3b8; }
+    .alert { padding: 10px; background-color: #dcfce7; color: #15803d; border-radius: 6px; margin-bottom: 15px; display: none; text-align: center; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Form Pengaturan TV Masjid</h2>
+    <div class="alert" id="success-alert">Data berhasil diperbarui ke Cloud!</div>
+
+    <form id="adminForm">
+      <h3>Profil Masjid</h3>
+      <div class="form-group"><label>Nama Masjid</label><input type="text" id="namaMasjid" required></div>
+      <div class="form-group"><label>Alamat Masjid</label><input type="text" id="alamatMasjid" required></div>
+
+      <h3 style="margin-top:20px;">Petugas Sholat Jumat</h3>
+      <div class="form-group"><label>Khatib</label><input type="text" id="khatib"></div>
+      <div class="form-group"><label>Imam</label><input type="text" id="imam"></div>
+      <div class="form-group"><label>Muadzin</label><input type="text" id="muadzin"></div>
+
+      <h3 style="margin-top:20px;">Laporan Kas</h3>
+      <div class="form-group"><label>Pemasukan</label><input type="text" id="pemasukan"></div>
+      <div class="form-group"><label>Pengeluaran</label><input type="text" id="pengeluaran"></div>
+      <div class="form-group"><label>Saldo Kas</label><input type="text" id="saldo"></div>
+
+      <h3 style="margin-top:20px;">Pengumuman & Imbauan</h3>
+      <div class="form-group"><label>Himbauan</label><input type="text" id="himbauan"></div>
+      <div class="form-group"><label>Running Text</label><textarea id="runningText"></textarea></div>
+
+      <button type="submit" id="btnSave">Simpan & Perbarui Display TV</button>
+    </form>
+  </div>
+
+  <script>
+    // BIN ID DAN API KEY MILIK KAKAK DARI FOTO
+    const BIN_ID = "6ac5370aac6210605a19fc45";
+    const API_KEY = "$2a$10$bgwctqMgKxeqMN44zFlbWuExKVmzYKJ/18JKAttoeljXcYcDKaoiq";
+
+    // Muat data awal dari Cloud saat halaman dibuka
+    async function loadCloudData() {
+      try {
+        const response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+          headers: { "X-Master-Key": API_KEY }
+        });
+        const result = await response.json();
+        const data = result.record;
+
+        if (data && data.namaMasjid) {
+          document.getElementById('namaMasjid').value = data.namaMasjid || "";
+          document.getElementById('alamatMasjid').value = data.alamatMasjid || "";
+          document.getElementById('khatib').value = data.khatib || "";
+          document.getElementById('imam').value = data.imam || "";
+          document.getElementById('muadzin').value = data.muadzin || "";
+          document.getElementById('pemasukan').value = data.pemasukan || "";
+          document.getElementById('pengeluaran').value = data.pengeluaran || "";
+          document.getElementById('saldo').value = data.saldo || "";
+          document.getElementById('himbauan').value = data.himbauan || "";
+          document.getElementById('runningText').value = data.runningText || "";
+        }
+      } catch (err) {
+        console.error("Gagal memuat data:", err);
+      }
+    }
+
+    loadCloudData();
+
+    // Kirim data baru ke Cloud JSONBin saat tombol Simpan diklik
+    document.getElementById('adminForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btnSave');
+      btn.disabled = true;
+      btn.innerText = "Menyimpan...";
+
+      const newData = {
+        namaMasjid: document.getElementById('namaMasjid').value,
+        alamatMasjid: document.getElementById('alamatMasjid').value,
+        khatib: document.getElementById('khatib').value,
+        imam: document.getElementById('imam').value,
+        muadzin: document.getElementById('muadzin').value,
+        pemasukan: document.getElementById('pemasukan').value,
+        pengeluaran: document.getElementById('pengeluaran').value,
+        saldo: document.getElementById('saldo').value,
+        himbauan: document.getElementById('himbauan').value,
+        runningText: document.getElementById('runningText').value
+      };
+
+      try {
+        await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+          method: 'PUT',
+          headers: {
+            "Content-Type": "application/json",
+            "X-Master-Key": API_KEY
+          },
+          body: JSON.stringify(newData)
+        });
+
+        const alertBox = document.getElementById('success-alert');
+        alertBox.style.display = 'block';
+        setTimeout(() => alertBox.style.display = 'none', 3000);
+      } catch (err) {
+        alert("Gagal menyimpan data ke cloud!");
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "Simpan & Perbarui Display TV";
+      }
+    });
+  </script>
+</body>
+</html>

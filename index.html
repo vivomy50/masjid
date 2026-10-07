@@ -3,183 +3,175 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Display Masjid</title>
+  <title>Admin Dashboard Display Masjid</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    body {
-      background-color: #0b132b;
-      color: white;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      overflow: hidden;
-      height: 100vh;
-      margin: 0;
-    }
-
-    .sidebar-left {
-      background-color: #0d1b2a;
-      height: 100vh;
-      padding: 15px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      border-right: 2px solid #1c2541;
-    }
-
-    .date-box {
-      background: #ffffff;
-      color: #000000;
-      border-radius: 8px;
-      padding: 10px;
-      text-align: center;
-      font-weight: bold;
-    }
-
-    .date-masehi {
-      font-size: 0.95rem;
-      text-transform: uppercase;
-      margin-bottom: 2px;
-    }
-
-    .date-hijri {
-      font-size: 0.9rem;
-      color: #333;
-    }
-
-    /* AREA GAMBAR TAMBAHAN DI KIRI */
-    .banner-left-container {
-      flex-grow: 1;
-      margin: 15px 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      border-radius: 10px;
-      background-color: rgba(255, 255, 255, 0.03);
-    }
-
-    .banner-left-img {
-      width: 100%;
-      height: 100%;
-      max-height: 320px;
-      object-fit: cover;
-      border-radius: 10px;
-    }
-
-    /* JADWAL SHOLAT */
-    .sholat-item {
-      background-color: #1b5e20;
-      border-radius: 8px;
-      padding: 6px 12px;
-      margin-bottom: 6px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-weight: bold;
-      font-size: 1.05rem;
-    }
-
-    .header-title {
-      background-color: #1b5e20;
-      padding: 15px;
-      border-bottom: 3px solid #fbc02d;
-    }
-
-    .header-title h2 {
-      margin: 0;
-      font-weight: 800;
-      letter-spacing: 1px;
-    }
-
-    .header-title p {
-      margin: 0;
-      font-size: 0.9rem;
-      opacity: 0.9;
-    }
+    body { background-color: #f4f6f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding-bottom: 50px; }
+    .card-custom { border-radius: 12px; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 20px; }
+    .card-header-custom { background-color: #1b5e20; color: white; border-radius: 12px 12px 0 0 !important; font-weight: bold; }
+    .btn-save { background-color: #1b5e20; color: white; font-weight: bold; padding: 12px 30px; border-radius: 8px; }
+    .btn-save:hover { background-color: #144417; color: white; }
   </style>
 </head>
 <body>
 
-<div class="container-fluid p-0">
-  <div class="row g-0">
-    <!-- SIDEBAR KIRI -->
-    <div class="col-3 sidebar-left">
-      <!-- TANGGAL -->
-      <div class="date-box">
-        <div id="tanggalMasehi" class="date-masehi">KAMIS, 8 OKTOBER 2026</div>
-        <div id="tanggalHijriah" class="date-hijri">27 Rabiulakhir 1448 H</div>
-      </div>
-
-      <!-- AREA GAMBAR / BANNER SAMPING KIRI -->
-      <div class="banner-left-container">
-        <img id="gambarKiri" src="https://via.placeholder.com/400x500?text=Banner+Masjid" class="banner-left-img" alt="Banner Samping">
-      </div>
-
-      <!-- JADWAL SHOLAT -->
-      <div class="sholat-container">
-        <div class="sholat-item"><span>Imsak</span><span id="imsak">04:02</span></div>
-        <div class="sholat-item"><span>Subuh</span><span id="subuh">04:12</span></div>
-        <div class="sholat-item"><span>Syuruq</span><span id="syuruq">05:31</span></div>
-        <div class="sholat-item"><span>Dzuhur</span><span id="dzuhur">11:52</span></div>
-        <div class="sholat-item"><span>Ashar</span><span id="ashar">15:15</span></div>
-        <div class="sholat-item"><span>Maghrib</span><span id="maghrib">18:08</span></div>
-        <div class="sholat-item"><span>Isya</span><span id="isya">19:22</span></div>
-      </div>
-    </div>
-
-    <!-- AREA UTAMA KANAN -->
-    <div class="col-9">
-      <div class="header-title">
-        <h2 id="dispNamaMasjid">MASJID BESAR AL FALAH WEDUNG</h2>
-        <p id="dispAlamatMasjid">JL. RAYA KAUMAN WEDUNG</p>
-      </div>
-    </div>
+<div class="container mt-4" style="max-width: 900px;">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="fw-bold text-success m-0">Panel Admin Display Masjid</h3>
+    <button class="btn btn-outline-secondary btn-sm" onclick="loadDataFromCloud()">🔄 Muat Ulang Data</button>
   </div>
+
+  <form id="adminForm">
+    <!-- 1. IDENTITAS & GAMBAR -->
+    <div class="card card-custom">
+      <div class="card-header card-header-custom">1. Identitas & Gambar Display</div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label font-semibold">Nama Masjid</label>
+            <input type="text" id="namaMasjid" class="form-control" placeholder="Contoh: MASJID BESAR AL FALAH WEDUNG">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label font-semibold">Alamat / Kota</label>
+            <input type="text" id="alamatMasjid" class="form-control" placeholder="Contoh: JL. RAYA KAUMAN WEDUNG">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label font-semibold">URL Foto Slide Utama (Kanan)</label>
+            <input type="url" id="fotoMasjid" class="form-control" placeholder="https://link-foto.com/masjid.jpg">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label font-semibold">URL Gambar Samping Kiri (Atas Sholat)</label>
+            <input type="url" id="gambarKiri" class="form-control" placeholder="https://link-foto.com/banner-samping.jpg">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. PETUGAS SHOLAT -->
+    <div class="card card-custom">
+      <div class="card-header card-header-custom">2. Petugas Sholat & Foto Profil</div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label fw-bold text-success">Khatib</label>
+            <input type="text" id="khatib" class="form-control mb-2" placeholder="Nama Khatib">
+            <label class="form-label small text-muted">URL Foto Khatib</label>
+            <input type="url" id="fotoKhatib" class="form-control" placeholder="https://link-foto.com/khatib.jpg">
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label fw-bold text-success">Imam</label>
+            <input type="text" id="imam" class="form-control mb-2" placeholder="Nama Imam">
+            <label class="form-label small text-muted">URL Foto Imam</label>
+            <input type="url" id="fotoImam" class="form-control" placeholder="https://link-foto.com/imam.jpg">
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label fw-bold text-success">Bilal / Muadzin</label>
+            <input type="text" id="muadzin" class="form-control mb-2" placeholder="Nama Bilal">
+            <label class="form-label small text-muted">URL Foto Bilal</label>
+            <input type="url" id="fotoMuadzin" class="form-control" placeholder="https://link-foto.com/bilal.jpg">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. RUNNING TEXT -->
+    <div class="card card-custom">
+      <div class="card-header card-header-custom">3. Teks Berjalan (Running Text)</div>
+      <div class="card-body">
+        <label class="form-label font-semibold">Pesan Running Text</label>
+        <textarea id="runningText" class="form-control" rows="3" placeholder="Masukkan pesan berjalan di bagian bawah layar..."></textarea>
+      </div>
+    </div>
+
+    <!-- TOMBOL SIMPAN -->
+    <div class="text-center mt-4">
+      <button type="button" class="btn btn-save btn-lg shadow" onclick="saveDataToCloud()">💾 Simpan & Perbarui Display</button>
+    </div>
+  </form>
 </div>
 
 <script>
   const BIN_ID = "6ac5370aac6210605a19fc45";
   const ACCESS_KEY = "$2a$10$1QcRWM9V75Gi9P5KELGYU.AtsQXL3hadbNeMh2CApTcv0IQGkeJIO";
 
-  // Perbaikan Tanggal Masehi & Hijriah
-  function updateClockAndDate() {
-    const now = new Date();
-    const optionsMasehi = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
-    document.getElementById('tanggalMasehi').innerText = now.toLocaleDateString('id-ID', optionsMasehi).toUpperCase();
-
+  async function loadDataFromCloud() {
     try {
-      const optionsHijri = { day: 'numeric', month: 'long', year: 'numeric' };
-      const hijriFormatter = new Intl.DateTimeFormat('id-ID-u-ca-islamic-umalqura', optionsHijri);
-      // Format otomatis tanpa merangkap huruf H
-      document.getElementById('tanggalHijriah').innerText = hijriFormatter.format(now) + " H";
-    } catch (e) {
-      document.getElementById('tanggalHijriah').innerText = "27 Rabiulakhir 1448 H";
-    }
-  }
-
-  // Load Data dari JSONBin Cloud
-  async function loadData() {
-    try {
-      const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+      const response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+        method: 'GET',
         headers: { "X-Master-Key": ACCESS_KEY, "X-Access-Key": ACCESS_KEY }
       });
-      if (res.ok) {
-        const json = await res.json();
-        const data = json.record || json;
-        if (data.namaMasjid) document.getElementById('dispNamaMasjid').innerText = data.namaMasjid;
-        if (data.alamatMasjid) document.getElementById('dispAlamatMasjid').innerText = data.alamatMasjid;
-        if (data.gambarKiri) {
-          document.getElementById('gambarKiri').src = data.gambarKiri;
-        }
+
+      if (!response.ok) throw new Error("Gagal mengambil data.");
+
+      const resJson = await response.json();
+      const data = resJson.record || resJson;
+
+      if (data) {
+        document.getElementById('namaMasjid').value = data.namaMasjid || "";
+        document.getElementById('alamatMasjid').value = data.alamatMasjid || "";
+        document.getElementById('fotoMasjid').value = data.fotoMasjid || "";
+        document.getElementById('gambarKiri').value = data.gambarKiri || "";
+
+        document.getElementById('khatib').value = data.khatib || "";
+        document.getElementById('fotoKhatib').value = data.fotoKhatib || "";
+
+        document.getElementById('imam').value = data.imam || "";
+        document.getElementById('fotoImam').value = data.fotoImam || "";
+
+        document.getElementById('muadzin').value = data.muadzin || "";
+        document.getElementById('fotoMuadzin').value = data.fotoMuadzin || "";
+
+        document.getElementById('runningText').value = data.runningText || "";
       }
-    } catch (err) {
-      console.log("Gagal memuat data cloud", err);
+    } catch (error) {
+      console.log("Error loading data", error);
     }
   }
 
-  setInterval(updateClockAndDate, 1000);
-  updateClockAndDate();
-  loadData();
-  setInterval(loadData, 15000); // Auto-refresh data tiap 15 detik
+  async function saveDataToCloud() {
+    const payload = {
+      namaMasjid: document.getElementById('namaMasjid').value,
+      alamatMasjid: document.getElementById('alamatMasjid').value,
+      fotoMasjid: document.getElementById('fotoMasjid').value,
+      gambarKiri: document.getElementById('gambarKiri').value,
+
+      khatib: document.getElementById('khatib').value,
+      fotoKhatib: document.getElementById('fotoKhatib').value,
+
+      imam: document.getElementById('imam').value,
+      fotoImam: document.getElementById('fotoImam').value,
+
+      muadzin: document.getElementById('muadzin').value,
+      fotoMuadzin: document.getElementById('fotoMuadzin').value,
+
+      runningText: document.getElementById('runningText').value
+    };
+
+    try {
+      const response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+        method: 'PUT',
+        headers: {
+          "Content-Type": "application/json",
+          "X-Master-Key": ACCESS_KEY,
+          "X-Access-Key": ACCESS_KEY,
+          "X-Bin-Versioning": "false"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (response.ok) {
+        alert("✅ Data berhasil disimpan! Slide foto dan running text akan otomatis tampil.");
+      } else {
+        alert("❌ Gagal menyimpan data.");
+      }
+    } catch (error) {
+      alert("❌ Terjadi kesalahan: " + error.message);
+    }
+  }
+
+  window.onload = loadDataFromCloud;
 </script>
 </body>
 </html>

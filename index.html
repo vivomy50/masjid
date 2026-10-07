@@ -172,7 +172,7 @@
         const hijriFormatter = new Intl.DateTimeFormat('id-ID-u-ca-islamic-umalqura', optionsHijri);
         document.getElementById('tanggalHijriah').innerText = hijriFormatter.format(now) + " H";
       } catch (e) {
-        document.getElementById('tanggalHijriah').innerText = "26 Rabiul Akhir 1448 H";
+        document.getElementById('tanggalHijriah').innerText = "26 Rabiul Akhir 1448 ";
       }
     } catch(e) {
       console.error("Error clock/date:", e);

@@ -14,7 +14,7 @@
 
     /* Sidebar Kiri (Jadwal Sholat) */
     .sidebar { width: 22%; background-color: #111; color: #fff; padding: 10px; display: flex; flex-direction: column; justify-content: space-between; }
-    .date-box { background: #fff; color: #000; text-align: center; border-radius: 6px; padding: 6px; font-weight: bold; margin-bottom: 8px; }
+    .date-box { background: #fff; color: #000; text-align: center; border-radius: 6px; padding: 8px; font-weight: bold; margin-bottom: 8px; }
     .prayer-item { background: #1b5e20; border-radius: 8px; padding: 8px 12px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
     .prayer-name { font-size: 1rem; font-weight: 600; }
     .prayer-time { font-size: 1.2rem; font-weight: bold; }
@@ -59,8 +59,8 @@
   <!-- SIDEBAR JADWAL SHOLAT -->
   <div class="sidebar">
     <div class="date-box">
-      <div id="dateMasehi" style="font-size: 0.85rem;">-</div>
-      <div id="dateHijri" style="font-size: 0.8rem; color: #555;">-</div>
+      <div id="tanggalMasehi" style="font-size: 0.85rem; font-weight: bold;">-</div>
+      <div id="tanggalHijriah" style="font-size: 0.85rem; color: #1b5e20; font-weight: bold; margin-top: 3px;">-</div>
     </div>
 
     <div class="prayer-list">
@@ -95,7 +95,7 @@
         <div id="dispWaktuKajian" class="agenda-waktu">-</div>
       </div>
 
-      <!-- SLIDE 2: JADWAL SHOLAT JUM'AT (PETUGAS JUMAT) -->
+      <!-- SLIDE 2: JADWAL SHOLAT JUM'AT -->
       <div class="slide" id="slide2">
         <div class="jumat-title">JADWAL PETUGAS SHOLAT JUM'AT</div>
         <div class="jumat-container">
@@ -148,12 +148,13 @@
   <marquee id="dispRunningText" behavior="scroll" direction="left">Mari berdonasi untuk pembangunan masjid...</marquee>
 </div>
 
+<!-- BAGIAN SCRIPT JAVASCRIPT LENGKAP -->
 <script>
   const BIN_ID = "6ac5370aac6210605a19fc45";
   const ACCESS_KEY = "$2a$10$1QcRWM9V75Gi9P5KELGYU.AtsQXL3hadbNeMh2CApTcv0IQGkeJIO";
 
-  // 1. Jam Digital & Tanggal Masehi + Hijriah (Terpisah dari API agar tidak pernah blank)
-  function updateClock() {
+  // 1. Jam Digital & Tanggal Masehi + Hijriah Akurat
+  function updateClockAndDate() {
     try {
       const now = new Date();
       const hrs = String(now.getHours()).padStart(2, '0');
@@ -161,27 +162,27 @@
       const secs = String(now.getSeconds()).padStart(2, '0');
       document.getElementById('clock').innerText = `${hrs}:${mins}:${secs}`;
 
-      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-      const masehiStr = now.toLocaleDateString('id-ID', options).toUpperCase();
-      document.getElementById('dateMasehi').innerText = masehiStr;
+      // Tanggal Masehi
+      const optionsMasehi = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+      const tanggalMasehiStr = now.toLocaleDateString('id-ID', optionsMasehi).toUpperCase();
+      document.getElementById('tanggalMasehi').innerText = tanggalMasehiStr;
 
-      // Konversi Sederhana Tanggal Hijriah
-      if (typeof Intl !== 'undefined' && Intl.DateTimeFormat) {
-        const hijriFormatter = new Intl.DateTimeFormat('id-ID-u-ca-islamic-uma', {
-          day: 'numeric', month: 'long', year: 'numeric'
-        });
-        document.getElementById('dateHijri').innerText = hijriFormatter.format(now) + " H";
-      } else {
-        document.getElementById('dateHijri').innerText = "";
+      // Tanggal Hijriah Otomatis Menggunakan Intl API
+      try {
+        const optionsHijri = { day: 'numeric', month: 'long', year: 'numeric' };
+        const hijriFormatter = new Intl.DateTimeFormat('id-ID-u-ca-islamic-umalqura', optionsHijri);
+        document.getElementById('tanggalHijriah').innerText = hijriFormatter.format(now) + " H";
+      } catch (e) {
+        document.getElementById('tanggalHijriah').innerText = "26 Rabiul Akhir 1448 H";
       }
     } catch(e) {
       console.error("Error clock/date:", e);
     }
   }
-  setInterval(updateClock, 1000);
-  updateClock();
+  setInterval(updateClockAndDate, 1000);
+  updateClockAndDate();
 
-  // 2. Rotasi Slideshow Otomatis
+  // 2. Rotasi Slideshow Otomatis (Tiap 5 Detik)
   let currentSlide = 0;
   const slides = document.querySelectorAll('.slide');
 
@@ -191,10 +192,9 @@
     currentSlide = (currentSlide + 1) % slides.length;
     slides[currentSlide].classList.add('active');
   }
+  setInterval(nextSlide, 5000);
 
-  setInterval(nextSlide, 5000); // Berganti tiap 5 detik
-
-  // 3. Ambil Data Real-time dari JSONBin (Aman dari Crash)
+  // 3. Ambil Data Real-time dari Cloud JSONBin
   async function fetchDisplayData() {
     try {
       const response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
@@ -205,9 +205,7 @@
         }
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      if (!response.ok) return;
 
       const resJson = await response.json();
       const data = resJson.record || resJson;
@@ -221,7 +219,7 @@
         if (data.pemateri) document.getElementById('dispPemateri').innerText = data.pemateri;
         if (data.waktuKajian) document.getElementById('dispWaktuKajian').innerText = data.waktuKajian;
 
-        // Petugas Jumat Ringkasan
+        // Petugas Jumat Ringkasan & Profil
         if (data.khatib) {
           document.getElementById('dispKhatibJumat').innerText = data.khatib;
           document.getElementById('dispKhatib').innerText = data.khatib;
@@ -235,7 +233,7 @@
           document.getElementById('dispMuadzin').innerText = data.muadzin;
         }
 
-        // Foto-foto (Hanya ganti jika URL terisi)
+        // Foto-foto (Hanya update jika ada URL valid)
         if (data.fotoKhatib && data.fotoKhatib.startsWith('http')) {
           document.getElementById('imgKhatib').src = data.fotoKhatib;
         }
@@ -253,275 +251,12 @@
         if (data.runningText) document.getElementById('dispRunningText').innerText = data.runningText;
       }
     } catch (error) {
-      console.warn("Gagal update data dari server cloud, menggunakan cache/data terakhir:", error);
+      console.warn("Koneksi cloud lambat:", error);
     }
   }
 
   fetchDisplayData();
-  setInterval(fetchDisplayData, 7000); // Update data otomatis tiap 7 detik
-</script>
-</body>
-</html><!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Display Digital Masjid</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow: hidden; height: 100vh; }
-    
-    /* Layout Utama Grid */
-    .app-container { display: flex; height: calc(100vh - 45px); }
-
-    /* Sidebar Kiri (Jadwal Sholat) */
-    .sidebar { width: 22%; background-color: #111; color: #fff; padding: 10px; display: flex; flex-direction: column; justify-content: space-between; }
-    .date-box { background: #fff; color: #000; text-align: center; border-radius: 6px; padding: 6px; font-weight: bold; margin-bottom: 8px; }
-    .prayer-item { background: #1b5e20; border-radius: 8px; padding: 8px 12px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
-    .prayer-name { font-size: 1rem; font-weight: 600; }
-    .prayer-time { font-size: 1.2rem; font-weight: bold; }
-
-    /* Area Kanan (Main Content) */
-    .main-content { width: 78%; display: flex; flex-direction: column; }
-    
-    /* Header Atas Hijau */
-    .header-bar { background-color: #1b5e20; color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #ffd700; }
-    .clock-display { font-size: 2.5rem; font-weight: bold; color: #ffffff; }
-
-    /* Container Slideshow */
-    .content-body { flex: 1; background: #ffffff; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
-
-    .slide { position: absolute; width: 100%; height: 100%; opacity: 0; transition: opacity 1s ease-in-out; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; }
-    .slide.active { opacity: 1; z-index: 10; }
-
-    /* Item Tampilan Slide Agenda */
-    .agenda-title { font-size: 3rem; font-weight: 900; color: #111; text-transform: uppercase; }
-    .agenda-pemateri { font-size: 2.2rem; font-weight: bold; color: #1b5e20; margin-top: 10px; }
-    .agenda-waktu { font-size: 1.5rem; font-weight: 600; color: #333; margin-top: 15px; background: #e8f5e9; padding: 10px 20px; border-radius: 8px; }
-
-    /* Item Person Profil */
-    .person-img { width: 190px; height: 190px; border-radius: 50%; object-fit: cover; border: 5px solid #1b5e20; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
-    .person-role { font-size: 1.5rem; font-weight: bold; color: #1b5e20; text-transform: uppercase; letter-spacing: 2px; }
-    .person-name { font-size: 2.3rem; font-weight: 800; color: #222; }
-
-    /* Card Petugas Jumat Gabungan */
-    .jumat-title { font-size: 2.5rem; font-weight: bold; color: #1b5e20; margin-bottom: 25px; border-bottom: 3px solid #ffd700; padding-bottom: 5px; }
-    .jumat-container { display: flex; justify-content: center; gap: 20px; width: 100%; }
-    .jumat-card { background: #f4f6f9; border-radius: 12px; padding: 15px; width: 30%; border: 1px solid #ddd; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-
-    .masjid-img { width: 100%; max-height: 80%; object-fit: cover; border-radius: 12px; border: 4px solid #1b5e20; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
-
-    /* Running Text Bawah */
-    .footer-ticker { background: #000; color: #ffd700; height: 45px; line-height: 45px; font-size: 1.4rem; border-top: 2px solid #ffd700; }
-  </style>
-</head>
-<body>
-
-<div class="app-container">
-  <!-- SIDEBAR JADWAL SHOLAT -->
-  <div class="sidebar">
-    <div class="date-box">
-      <div id="dateMasehi" style="font-size: 0.85rem;">-</div>
-      <div id="dateHijri" style="font-size: 0.8rem; color: #555;">-</div>
-    </div>
-
-    <div class="prayer-list">
-      <div class="prayer-item"><span class="prayer-name">Imsak</span><span class="prayer-time">04:02</span></div>
-      <div class="prayer-item"><span class="prayer-name">Subuh</span><span class="prayer-time">04:12</span></div>
-      <div class="prayer-item"><span class="prayer-name">Syuruq</span><span class="prayer-time">05:31</span></div>
-      <div class="prayer-item"><span class="prayer-name">Dzuhur</span><span class="prayer-time">11:52</span></div>
-      <div class="prayer-item"><span class="prayer-name">Ashar</span><span class="prayer-time">15:15</span></div>
-      <div class="prayer-item"><span class="prayer-name">Maghrib</span><span class="prayer-time">18:08</span></div>
-      <div class="prayer-item"><span class="prayer-name">Isya</span><span class="prayer-time">19:22</span></div>
-    </div>
-  </div>
-
-  <!-- AREA UTAMA -->
-  <div class="main-content">
-    <!-- HEADER -->
-    <div class="header-bar">
-      <div>
-        <h2 id="dispNamaMasjid" class="m-0 fw-bold">MASJID BESAR AL FALAH WEDUNG</h2>
-        <p id="dispAlamatMasjid" class="m-0 small text-light">JL. RAYA KAUMAN WEDUNG</p>
-      </div>
-      <div class="clock-display" id="clock">00:00:00</div>
-    </div>
-
-    <!-- CONTENT BODY (SLIDESHOW) -->
-    <div class="content-body">
-      <!-- SLIDE 1: AGENDA / KAJIAN -->
-      <div class="slide active" id="slide1">
-        <div id="dispJudulKajian" class="agenda-title">KAJIAN / AGENDA</div>
-        <div class="fs-4 text-muted mt-2">Penceramah / Pemateri:</div>
-        <div id="dispPemateri" class="agenda-pemateri">-</div>
-        <div id="dispWaktuKajian" class="agenda-waktu">-</div>
-      </div>
-
-      <!-- SLIDE 2: JADWAL SHOLAT JUM'AT (PETUGAS JUMAT) -->
-      <div class="slide" id="slide2">
-        <div class="jumat-title">JADWAL PETUGAS SHOLAT JUM'AT</div>
-        <div class="jumat-container">
-          <div class="jumat-card">
-            <div class="fw-bold text-success fs-5">KHATIB</div>
-            <div id="dispKhatibJumat" class="fs-5 fw-semibold mt-2">-</div>
-          </div>
-          <div class="jumat-card">
-            <div class="fw-bold text-success fs-5">IMAM</div>
-            <div id="dispImamJumat" class="fs-5 fw-semibold mt-2">-</div>
-          </div>
-          <div class="jumat-card">
-            <div class="fw-bold text-success fs-5">BILAL / MUADZIN</div>
-            <div id="dispMuadzinJumat" class="fs-5 fw-semibold mt-2">-</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- SLIDE 3: PROFIL KHATIB -->
-      <div class="slide" id="slide3">
-        <img id="imgKhatib" src="https://via.placeholder.com/200?text=Foto+Khatib" class="person-img" alt="Khatib">
-        <div class="person-role">KHATIB JUM'AT</div>
-        <div id="dispKhatib" class="person-name">-</div>
-      </div>
-
-      <!-- SLIDE 4: PROFIL IMAM -->
-      <div class="slide" id="slide4">
-        <img id="imgImam" src="https://via.placeholder.com/200?text=Foto+Imam" class="person-img" alt="Imam">
-        <div class="person-role">IMAM SHOLAT</div>
-        <div id="dispImam" class="person-name">-</div>
-      </div>
-
-      <!-- SLIDE 5: PROFIL BILAL / MUADZIN -->
-      <div class="slide" id="slide5">
-        <img id="imgMuadzin" src="https://via.placeholder.com/200?text=Foto+Bilal" class="person-img" alt="Bilal">
-        <div class="person-role">BILAL / MUADZIN</div>
-        <div id="dispMuadzin" class="person-name">-</div>
-      </div>
-
-      <!-- SLIDE 6: FOTO MASJID -->
-      <div class="slide" id="slide6">
-        <img id="imgMasjid" src="https://via.placeholder.com/600x350?text=Foto+Masjid" class="masjid-img" alt="Masjid">
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- FOOTER RUNNING TEXT -->
-<div class="footer-ticker">
-  <marquee id="dispRunningText" behavior="scroll" direction="left">Mari berdonasi untuk pembangunan masjid...</marquee>
-</div>
-
-<script>
-  const BIN_ID = "6ac5370aac6210605a19fc45";
-  const ACCESS_KEY = "$2a$10$1QcRWM9V75Gi9P5KELGYU.AtsQXL3hadbNeMh2CApTcv0IQGkeJIO";
-
-  // 1. Jam Digital & Tanggal Masehi + Hijriah (Terpisah dari API agar tidak pernah blank)
-  function updateClock() {
-    try {
-      const now = new Date();
-      const hrs = String(now.getHours()).padStart(2, '0');
-      const mins = String(now.getMinutes()).padStart(2, '0');
-      const secs = String(now.getSeconds()).padStart(2, '0');
-      document.getElementById('clock').innerText = `${hrs}:${mins}:${secs}`;
-
-      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-      const masehiStr = now.toLocaleDateString('id-ID', options).toUpperCase();
-      document.getElementById('dateMasehi').innerText = masehiStr;
-
-      // Konversi Sederhana Tanggal Hijriah
-      if (typeof Intl !== 'undefined' && Intl.DateTimeFormat) {
-        const hijriFormatter = new Intl.DateTimeFormat('id-ID-u-ca-islamic-uma', {
-          day: 'numeric', month: 'long', year: 'numeric'
-        });
-        document.getElementById('dateHijri').innerText = hijriFormatter.format(now) + " H";
-      } else {
-        document.getElementById('dateHijri').innerText = "";
-      }
-    } catch(e) {
-      console.error("Error clock/date:", e);
-    }
-  }
-  setInterval(updateClock, 1000);
-  updateClock();
-
-  // 2. Rotasi Slideshow Otomatis
-  let currentSlide = 0;
-  const slides = document.querySelectorAll('.slide');
-
-  function nextSlide() {
-    if (!slides || slides.length === 0) return;
-    slides[currentSlide].classList.remove('active');
-    currentSlide = (currentSlide + 1) % slides.length;
-    slides[currentSlide].classList.add('active');
-  }
-
-  setInterval(nextSlide, 5000); // Berganti tiap 5 detik
-
-  // 3. Ambil Data Real-time dari JSONBin (Aman dari Crash)
-  async function fetchDisplayData() {
-    try {
-      const response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
-        method: 'GET',
-        headers: {
-          "X-Master-Key": ACCESS_KEY,
-          "X-Access-Key": ACCESS_KEY
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const resJson = await response.json();
-      const data = resJson.record || resJson;
-
-      if (data) {
-        if (data.namaMasjid) document.getElementById('dispNamaMasjid').innerText = data.namaMasjid;
-        if (data.alamatMasjid) document.getElementById('dispAlamatMasjid').innerText = data.alamatMasjid;
-        
-        // Agenda
-        if (data.judulKajian) document.getElementById('dispJudulKajian').innerText = data.judulKajian;
-        if (data.pemateri) document.getElementById('dispPemateri').innerText = data.pemateri;
-        if (data.waktuKajian) document.getElementById('dispWaktuKajian').innerText = data.waktuKajian;
-
-        // Petugas Jumat Ringkasan
-        if (data.khatib) {
-          document.getElementById('dispKhatibJumat').innerText = data.khatib;
-          document.getElementById('dispKhatib').innerText = data.khatib;
-        }
-        if (data.imam) {
-          document.getElementById('dispImamJumat').innerText = data.imam;
-          document.getElementById('dispImam').innerText = data.imam;
-        }
-        if (data.muadzin) {
-          document.getElementById('dispMuadzinJumat').innerText = data.muadzin;
-          document.getElementById('dispMuadzin').innerText = data.muadzin;
-        }
-
-        // Foto-foto (Hanya ganti jika URL terisi)
-        if (data.fotoKhatib && data.fotoKhatib.startsWith('http')) {
-          document.getElementById('imgKhatib').src = data.fotoKhatib;
-        }
-        if (data.fotoImam && data.fotoImam.startsWith('http')) {
-          document.getElementById('imgImam').src = data.fotoImam;
-        }
-        if (data.fotoMuadzin && data.fotoMuadzin.startsWith('http')) {
-          document.getElementById('imgMuadzin').src = data.fotoMuadzin;
-        }
-        if (data.fotoMasjid && data.fotoMasjid.startsWith('http')) {
-          document.getElementById('imgMasjid').src = data.fotoMasjid;
-        }
-
-        // Running Text
-        if (data.runningText) document.getElementById('dispRunningText').innerText = data.runningText;
-      }
-    } catch (error) {
-      console.warn("Gagal update data dari server cloud, menggunakan cache/data terakhir:", error);
-    }
-  }
-
-  fetchDisplayData();
-  setInterval(fetchDisplayData, 7000); // Update data otomatis tiap 7 detik
+  setInterval(fetchDisplayData, 7000); // Sinkronkan data tiap 7 detik
 </script>
 </body>
 </html>

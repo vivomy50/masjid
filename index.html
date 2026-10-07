@@ -3,131 +3,98 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Display TV Masjid</title>
+  <title>Display Masjid</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
-    body { background-color: #0f172a; color: #ffffff; height: 100vh; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; }
-    header { background: linear-gradient(135deg, #1e293b, #0f172a); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #38bdf8; }
-    .masjid-info h1 { font-size: 2rem; color: #38bdf8; text-transform: uppercase; }
-    .masjid-info p { font-size: 1rem; color: #94a3b8; }
-    .clock-box { text-align: right; }
-    #clock { font-size: 2.5rem; font-weight: bold; color: #4ade80; }
-    #date-masehi { font-size: 1rem; color: #f8fafc; }
-    main { flex: 1; display: flex; justify-content: center; align-items: center; padding: 20px; }
-    .slide { display: none; width: 100%; height: 100%; background: #1e293b; border-radius: 12px; padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 1px solid #334155; text-align: center; flex-direction: column; justify-content: center; align-items: center; }
-    .slide.active { display: flex; }
-    .slide h2 { font-size: 2rem; color: #38bdf8; margin-bottom: 20px; border-bottom: 2px solid #334155; padding-bottom: 10px; width: 80%; }
-    .info-table { width: 70%; border-collapse: collapse; font-size: 1.3rem; }
-    .info-table td { padding: 12px 20px; border-bottom: 1px solid #334155; text-align: left; }
-    .info-table td:nth-child(2) { text-align: right; font-weight: bold; color: #4ade80; }
-    .sholat-container { display: grid; grid-template-columns: repeat(6, 1fr); gap: 15px; padding: 0 30px 15px 30px; }
-    .sholat-card { background: #1e293b; padding: 15px; border-radius: 10px; text-align: center; border: 1px solid #334155; }
-    .sholat-name { font-size: 1.1rem; color: #94a3b8; text-transform: uppercase; }
-    .sholat-time { font-size: 1.8rem; font-weight: bold; color: #ffffff; margin-top: 5px; }
-    footer { background: #0284c7; color: #ffffff; padding: 10px 0; overflow: hidden; white-space: nowrap; font-size: 1.2rem; }
-    .marquee { display: inline-block; padding-left: 100%; animation: marquee 25s linear infinite; }
-    @keyframes marquee { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
+    body { background-color: #0d1b2a; color: #ffffff; overflow: hidden; }
+    .header-box { background: linear-gradient(90deg, #1b5e20, #2e7d32); padding: 15px; border-bottom: 3px solid #ffd700; }
+    .card-custom { background-color: #1b263b; border: 1px solid #415a77; border-radius: 10px; color: #ffffff; }
+    .running-text-container { position: fixed; bottom: 0; left: 0; width: 100%; background: #000; color: #ffd700; font-size: 1.5rem; padding: 10px 0; border-top: 2px solid #ffd700; }
   </style>
 </head>
 <body>
 
-  <header>
-    <div class="masjid-info">
-      <h1 id="disp-nama-masjid">MEMUAT NAMA MASJID...</h1>
-      <p id="disp-alamat-masjid">Memuat alamat...</p>
-    </div>
-    <div class="clock-box">
-      <div id="clock">00:00:00</div>
-      <div id="date-masehi">Memuat Tanggal...</div>
-    </div>
-  </header>
-
-  <main>
-    <div class="slide active">
-      <h2>PETUGAS SHOLAT JUMAT</h2>
-      <table class="info-table">
-        <tr><td>Khatib</td><td id="disp-khatib">-</td></tr>
-        <tr><td>Imam</td><td id="disp-imam">-</td></tr>
-        <tr><td>Muadzin</td><td id="disp-muadzin">-</td></tr>
-      </table>
-    </div>
-    <div class="slide">
-      <h2>LAPORAN KAS MASJID</h2>
-      <table class="info-table">
-        <tr><td>Pemasukan Kas</td><td id="disp-pemasukan">-</td></tr>
-        <tr><td>Pengeluaran Kas</td><td id="disp-pengeluaran">-</td></tr>
-        <tr><td>Saldo Saat Ini</td><td id="disp-saldo">-</td></tr>
-      </table>
-    </div>
-    <div class="slide">
-      <h2>INFORMASI & HIMBAUAN</h2>
-      <p style="font-size: 1.6rem; color: #fbbf24; margin-top: 15px;" id="disp-himbauan">-</p>
-    </div>
-  </main>
-
-  <div class="sholat-container">
-    <div class="sholat-card"><div class="sholat-name">Subuh</div><div class="sholat-time" id="subuh">04:30</div></div>
-    <div class="sholat-card"><div class="sholat-name">Syuruq</div><div class="sholat-time" id="syuruq">05:45</div></div>
-    <div class="sholat-card"><div class="sholat-name">Dzuhur</div><div class="sholat-time" id="dzuhur">11:50</div></div>
-    <div class="sholat-card"><div class="sholat-name">Ashar</div><div class="sholat-time" id="ashar">15:05</div></div>
-    <div class="sholat-card"><div class="sholat-name">Maghrib</div><div class="sholat-time" id="maghrib">17:55</div></div>
-    <div class="sholat-card"><div class="sholat-name">Isya</div><div class="sholat-time" id="isya">19:05</div></div>
+  <!-- Header Nama & Alamat Masjid -->
+  <div class="header-box text-center">
+    <h1 id="dispNamaMasjid" class="fw-bold m-0">Masjid...</h1>
+    <p id="dispAlamatMasjid" class="m-0 fs-5 text-light">Alamat...</p>
   </div>
 
-  <footer>
-    <div class="marquee" id="disp-running-text">Memuat running text...</div>
-  </footer>
+  <div class="container-fluid mt-4">
+    <div class="row">
+      <!-- Petugas Jumat -->
+      <div class="col-md-6 mb-3">
+        <div class="card card-custom p-3">
+          <h4 class="text-warning border-bottom pb-2">Petugas Jumat</h4>
+          <p class="fs-5 mb-1"><strong>Khatib:</strong> <span id="dispKhatib">-</span></p>
+          <p class="fs-5 mb-1"><strong>Imam:</strong> <span id="dispImam">-</span></p>
+          <p class="fs-5 mb-0"><strong>Muadzin:</strong> <span id="dispMuadzin">-</span></p>
+        </div>
+      </div>
+
+      <!-- Keuangan -->
+      <div class="col-md-6 mb-3">
+        <div class="card card-custom p-3">
+          <h4 class="text-warning border-bottom pb-2">Laporan Kas</h4>
+          <p class="fs-5 mb-1"><strong>Pemasukan:</strong> Rp <span id="dispPemasukan">0</span></p>
+          <p class="fs-5 mb-1"><strong>Pengeluaran:</strong> Rp <span id="dispPengeluaran">0</span></p>
+          <p class="fs-5 mb-0"><strong>Saldo:</strong> Rp <span id="dispSaldo">0</span></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Himbauan / Pengumuman -->
+    <div class="row mt-2">
+      <div class="col-12">
+        <div class="card card-custom p-3">
+          <h4 class="text-warning border-bottom pb-2">Himbauan / Pengumuman</h4>
+          <p id="dispHimbauan" class="fs-4 m-0">-</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Running Text -->
+  <div class="running-text-container">
+    <marquee id="dispRunningText" behavior="scroll" direction="left">Memuat informasi...</marquee>
+  </div>
 
   <script>
     const BIN_ID = "6ac5370aac6210605a19fc45";
-    const API_KEY = "$2a$10$bgwctqMgKxeqMN44zFlbWuExKVmzYKJ/18JKAttoeljXcYcDKaoiq";
+    const ACCESS_KEY = "$2a$10$1QcRWM9V75Gi9P5KELGYU.AtsQXL3hadbNeMh2CApTcv0IQGkeJIO";
 
-    // Jam Digital
-    setInterval(() => {
-      const now = new Date();
-      document.getElementById('clock').innerText = now.toLocaleTimeString('id-ID');
-      document.getElementById('date-masehi').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-    }, 1000);
-
-    // Carousel Slide
-    let currentSlide = 0;
-    const slides = document.querySelectorAll('.slide');
-    setInterval(() => {
-      slides[currentSlide].classList.remove('active');
-      currentSlide = (currentSlide + 1) % slides.length;
-      slides[currentSlide].classList.add('active');
-    }, 8000);
-
-    // Ambil Data dari JSONBin Cloud
-    async function fetchCloudData() {
+    async function fetchDisplayData() {
       try {
         const response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
-          headers: { 
-            "X-Master-Key": API_KEY,
+          headers: {
+            "X-Access-Key": ACCESS_KEY,
             "X-Bin-Meta": "false"
           }
         });
         const data = await response.json();
 
-        if (data) {
-          document.getElementById('disp-nama-masjid').innerText = data.namaMasjid || "MASJID AL-IKHLAS";
-          document.getElementById('disp-alamat-masjid').innerText = data.alamatMasjid || "-";
-          document.getElementById('disp-khatib').innerText = data.khatib || "-";
-          document.getElementById('disp-imam').innerText = data.imam || "-";
-          document.getElementById('disp-muadzin').innerText = data.muadzin || "-";
-          document.getElementById('disp-pemasukan').innerText = data.pemasukan || "-";
-          document.getElementById('disp-pengeluaran').innerText = data.pengeluaran || "-";
-          document.getElementById('disp-saldo').innerText = data.saldo || "-";
-          document.getElementById('disp-himbauan').innerText = data.himbauan || "-";
-          document.getElementById('disp-running-text').innerText = data.runningText || "-";
+        if (data && !data.message) {
+          document.getElementById('dispNamaMasjid').innerText = data.namaMasjid || "Masjid";
+          document.getElementById('dispAlamatMasjid').innerText = data.alamatMasjid || "";
+          document.getElementById('dispKhatib').innerText = data.khatib || "-";
+          document.getElementById('dispImam').innerText = data.imam || "-";
+          document.getElementById('dispMuadzin').innerText = data.muadzin || "-";
+          document.getElementById('dispPemasukan').innerText = data.pemasukan || "0";
+          document.getElementById('dispPengeluaran').innerText = data.pengeluaran || "0";
+          document.getElementById('dispSaldo').innerText = data.saldo || "0";
+          document.getElementById('dispHimbauan').innerText = data.himbauan || "-";
+          document.getElementById('dispRunningText').innerText = data.runningText || "";
         }
-      } catch (err) {
-        console.error("Gagal mengambil data cloud:", err);
+      } catch (error) {
+        console.error("Gagal mengambil data dari cloud:", error);
       }
     }
 
-    fetchCloudData();
-    setInterval(fetchCloudData, 5000);
+    // Ambil data pertama kali saat halaman dibuka
+    fetchDisplayData();
+
+    // Otomatis memperbarui data setiap 10 detik tanpa reload halaman
+    setInterval(fetchDisplayData, 10000);
   </script>
 </body>
 </html>

@@ -148,12 +148,12 @@
   <marquee id="dispRunningText" behavior="scroll" direction="left">Mari berdonasi untuk pembangunan masjid...</marquee>
 </div>
 
-<!-- BAGIAN SCRIPT JAVASCRIPT LENGKAP -->
+<!-- SCRIPT JAVASCRIPT -->
 <script>
   const BIN_ID = "6ac5370aac6210605a19fc45";
   const ACCESS_KEY = "$2a$10$1QcRWM9V75Gi9P5KELGYU.AtsQXL3hadbNeMh2CApTcv0IQGkeJIO";
 
-  // 1. Jam Digital & Tanggal Masehi + Hijriah Akurat
+  // 1. Jam Digital & Tanggal (Masehi & Hijriah)
   function updateClockAndDate() {
     try {
       const now = new Date();
@@ -164,10 +164,9 @@
 
       // Tanggal Masehi
       const optionsMasehi = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
-      const tanggalMasehiStr = now.toLocaleDateString('id-ID', optionsMasehi).toUpperCase();
-      document.getElementById('tanggalMasehi').innerText = tanggalMasehiStr;
+      document.getElementById('tanggalMasehi').innerText = now.toLocaleDateString('id-ID', optionsMasehi).toUpperCase();
 
-      // Tanggal Hijriah Otomatis Menggunakan Intl API
+      // Tanggal Hijriah
       try {
         const optionsHijri = { day: 'numeric', month: 'long', year: 'numeric' };
         const hijriFormatter = new Intl.DateTimeFormat('id-ID-u-ca-islamic-umalqura', optionsHijri);
@@ -182,7 +181,7 @@
   setInterval(updateClockAndDate, 1000);
   updateClockAndDate();
 
-  // 2. Rotasi Slideshow Otomatis (Tiap 5 Detik)
+  // 2. Rotasi Slideshow Otomatis (Berganti Tiap 5 Detik)
   let currentSlide = 0;
   const slides = document.querySelectorAll('.slide');
 
@@ -194,21 +193,21 @@
   }
   setInterval(nextSlide, 5000);
 
-  // 3. Ambil Data Real-time dari Cloud JSONBin
+  // 3. Ambil Data Real-time dari JSONBin Cloud
   async function fetchDisplayData() {
     try {
-      const response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+      // Menambahkan parameter timestamp & header X-Bin-Meta agar selalu mendapat data paling segar tanpa cache
+      const response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest?t=${new Date().getTime()}`, {
         method: 'GET',
         headers: {
-          "X-Master-Key": ACCESS_KEY,
-          "X-Access-Key": ACCESS_KEY
+          "X-Access-Key": ACCESS_KEY,
+          "X-Bin-Meta": "false"
         }
       });
 
       if (!response.ok) return;
 
-      const resJson = await response.json();
-      const data = resJson.record || resJson;
+      const data = await response.json();
 
       if (data) {
         if (data.namaMasjid) document.getElementById('dispNamaMasjid').innerText = data.namaMasjid;
@@ -233,7 +232,7 @@
           document.getElementById('dispMuadzin').innerText = data.muadzin;
         }
 
-        // Foto-foto (Hanya update jika ada URL valid)
+        // Foto-foto
         if (data.fotoKhatib && data.fotoKhatib.startsWith('http')) {
           document.getElementById('imgKhatib').src = data.fotoKhatib;
         }
@@ -256,7 +255,7 @@
   }
 
   fetchDisplayData();
-  setInterval(fetchDisplayData, 7000); // Sinkronkan data tiap 7 detik
+  setInterval(fetchDisplayData, 5000); // Cek data baru dari cloud tiap 5 detik
 </script>
 </body>
 </html>

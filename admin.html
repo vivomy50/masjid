@@ -24,7 +24,7 @@
   <form id="adminForm">
     <!-- 1. IDENTITAS & GAMBAR -->
     <div class="card card-custom">
-      <div class="card-header card-header-custom">1. Identitas & Gambar Masjid</div>
+      <div class="card-header card-header-custom">1. Identitas & Gambar Display</div>
       <div class="card-body">
         <div class="row g-3">
           <div class="col-md-6">
@@ -36,11 +36,11 @@
             <input type="text" id="alamatMasjid" class="form-control" placeholder="Contoh: JL. RAYA KAUMAN WEDUNG">
           </div>
           <div class="col-md-6">
-            <label class="form-label font-semibold">URL Foto Masjid Main Slide</label>
+            <label class="form-label font-semibold">URL Foto Slide Utama (Kanan)</label>
             <input type="url" id="fotoMasjid" class="form-control" placeholder="https://link-foto.com/masjid.jpg">
           </div>
           <div class="col-md-6">
-            <label class="form-label font-semibold text-primary">URL Gambar Samping Kiri (Di atas Sholat)</label>
+            <label class="form-label font-semibold">URL Gambar Samping Kiri (Atas Sholat)</label>
             <input type="url" id="gambarKiri" class="form-control" placeholder="https://link-foto.com/banner-samping.jpg">
           </div>
         </div>
@@ -76,28 +76,12 @@
       </div>
     </div>
 
-    <!-- 3. AGENDA & RUNNING TEXT -->
+    <!-- 3. RUNNING TEXT -->
     <div class="card card-custom">
-      <div class="card-header card-header-custom">3. Agenda Kajian & Running Text</div>
+      <div class="card-header card-header-custom">3. Teks Berjalan (Running Text)</div>
       <div class="card-body">
-        <div class="row g-3">
-          <div class="col-md-6">
-            <label class="form-label font-semibold">Judul Agenda / Kajian</label>
-            <input type="text" id="judulKajian" class="form-control" placeholder="Contoh: KAJIAN RUTIN SELASA MALAM">
-          </div>
-          <div class="col-md-6">
-            <label class="form-label font-semibold">Penceramah / Pemateri</label>
-            <input type="text" id="pemateri" class="form-control" placeholder="Nama Penceramah">
-          </div>
-          <div class="col-12">
-            <label class="form-label font-semibold">Waktu & Tempat Kajian</label>
-            <input type="text" id="waktuKajian" class="form-control" placeholder="Contoh: Ba'da Maghrib - Selesai">
-          </div>
-          <div class="col-12">
-            <label class="form-label font-semibold">Running Text</label>
-            <textarea id="runningText" class="form-control" rows="2" placeholder="Masukkan pesan berjalan..."></textarea>
-          </div>
-        </div>
+        <label class="form-label font-semibold">Pesan Running Text</label>
+        <textarea id="runningText" class="form-control" rows="3" placeholder="Masukkan pesan berjalan di bagian bawah layar..."></textarea>
       </div>
     </div>
 
@@ -139,10 +123,6 @@
         document.getElementById('muadzin').value = data.muadzin || "";
         document.getElementById('fotoMuadzin').value = data.fotoMuadzin || "";
 
-        document.getElementById('judulKajian').value = data.judulKajian || "";
-        document.getElementById('pemateri').value = data.pemateri || "";
-        document.getElementById('waktuKajian').value = data.waktuKajian || "";
-
         document.getElementById('runningText').value = data.runningText || "";
       }
     } catch (error) {
@@ -166,10 +146,6 @@
       muadzin: document.getElementById('muadzin').value,
       fotoMuadzin: document.getElementById('fotoMuadzin').value,
 
-      judulKajian: document.getElementById('judulKajian').value,
-      pemateri: document.getElementById('pemateri').value,
-      waktuKajian: document.getElementById('waktuKajian').value,
-
       runningText: document.getElementById('runningText').value
     };
 
@@ -186,7 +162,7 @@
       });
 
       if (response.ok) {
-        alert("✅ Data berhasil disimpan! Gambar dan info di display masjid akan langsung diperbarui.");
+        alert("✅ Data berhasil disimpan! Slide foto dan running text akan otomatis tampil.");
       } else {
         alert("❌ Gagal menyimpan data.");
       }

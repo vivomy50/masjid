@@ -17,13 +17,13 @@
     
     /* Date Box diperbesar */
     .date-box { background: #fff; color: #000; text-align: center; border-radius: 8px; padding: 10px 6px; font-weight: bold; margin-bottom: 10px; }
-    #dateMasehi { font-size: 1.15rem; font-weight: 800; text-transform: uppercase; color: #111; }
-    #dateHijri { font-size: 1.05rem; color: #1b5e20; font-weight: 700; margin-top: 2px; }
+    #dateMasehi { font-size: 2rem; font-weight: 1000; text-transform: uppercase; color: #111; }
+    #dateHijri { font-size: 2rem; color: #1b5e20; font-weight: 900; margin-top: 2px; }
 
     /* Prayer List diperbesar */
     .prayer-item { background: #1b5e20; border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
-    .prayer-name { font-size: 1.35rem; font-weight: 700; }
-    .prayer-time { font-size: 1.6rem; font-weight: 900; color: #ffd700; }
+    .prayer-name { font-size: 2rem; font-weight: 900; }
+    .prayer-time { font-size: 2rem; font-weight: 1000; color: #ffd700; }
 
     /* Area Kanan (Main Content) */
     .main-content { width: 75%; display: flex; flex-direction: column; }
@@ -32,8 +32,8 @@
     .header-bar { background-color: #1b5e20; color: white; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid #ffd700; }
     
     /* Header Nama Masjid & Alamat diperbesar */
-    #dispNamaMasjid { font-size: 2.3rem; font-weight: 900; letter-spacing: 1px; text-shadow: 1px 1px 3px rgba(0,0,0,0.3); }
-    #dispAlamatMasjid { font-size: 1.25rem; font-weight: 600; color: #e8f5e9; margin-top: 2px; }
+    #dispNamaMasjid { font-size: 4rem; font-weight: 1100; letter-spacing: 1px; text-shadow: 1px 1px 3px rgba(0,0,0,0.3); }
+    #dispAlamatMasjid { font-size: 2rem; font-weight: 800; color: #e8f5e9; margin-top: 2px; }
     
     .clock-display { font-size: 3rem; font-weight: 900; color: #ffffff; letter-spacing: 2px; }
 
@@ -141,15 +141,24 @@
   const ACCESS_KEY = "$2a$10$2gk94J6Zl6Jz5Pe3OOp7W.AxqAKtSjiTMdFfljEODqXoSSHFBGP8K";
 
   // Helper untuk Memperbaiki URL Gambar (Khusus Imgur agar Tampil)
-  function fixImgurUrl(url) {
-    if (!url) return '';
-    let cleanUrl = url.trim();
-    if (cleanUrl.includes('imgur.com') && !cleanUrl.includes('i.imgur.com')) {
-      const id = cleanUrl.split('/').pop().split('.')[0];
-      return `https://i.imgur.com/${id}.jpg`;
-    }
-    return cleanUrl;
+  function fixImageUrl(url) {
+  if (!url) return '';
+  let cleanUrl = url.trim();
+
+  // Konversi link Imgur biasa ke Direct Link
+  if (cleanUrl.includes('imgur.com') && !cleanUrl.includes('i.imgur.com')) {
+    const id = cleanUrl.split('/').pop().split('.')[0];
+    return `https://i.imgur.com/${id}.jpg`;
   }
+
+  // Konversi link PostImage biasa (postimg.cc) ke Direct Link (i.postimg.cc)
+  if (cleanUrl.includes('postimg.cc') && !cleanUrl.includes('i.postimg.cc')) {
+    const id = cleanUrl.split('/').pop();
+    return `https://i.postimg.cc/${id}/image.jpg`;
+  }
+
+  return cleanUrl;
+}
 
   // 1. Jam Digital & Tanggal Masehi Real-time
   function updateClockAndMasehi() {

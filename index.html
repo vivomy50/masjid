@@ -56,7 +56,7 @@
       <!-- Masehi Otomatis -->
       <div id="dateMasehi" style="font-size: 0.85rem; text-transform: uppercase;">MEMUAT...</div>
       <!-- Hijriah Otomatis -->
-      <div id="dateHijri" style="font-size: 0.8rem; color: #1b5e20; font-weight: font-semibold;">MEMUAT...</div>
+      <div id="dateHijri" style="font-size: 0.8rem; color: #1b5e20; font-weight: 600;">MEMUAT...</div>
     </div>
 
     <div class="prayer-list">
@@ -91,22 +91,29 @@
         <div id="dispWaktuKajian" class="agenda-waktu">Tiap Selasa pukul 16.30 WIB</div>
       </div>
 
-      <!-- SLIDE 2: PROFIL IMAM -->
+      <!-- SLIDE 2: PROFIL KHATIB JUMAT -->
       <div class="slide" id="slide2">
+        <img id="imgKhatib" src="https://via.placeholder.com/200?text=Foto+Khatib" class="person-img" alt="Khatib">
+        <div class="person-role">KHATIB JUM'AT</div>
+        <div id="dispKhatib" class="person-name">-</div>
+      </div>
+
+      <!-- SLIDE 3: PROFIL IMAM -->
+      <div class="slide" id="slide3">
         <img id="imgImam" src="https://via.placeholder.com/200?text=Foto+Imam" class="person-img" alt="Imam">
         <div class="person-role">IMAM MASJID</div>
         <div id="dispImam" class="person-name">-</div>
       </div>
 
-      <!-- SLIDE 3: PROFIL BILAL / MUADZIN -->
-      <div class="slide" id="slide3">
+      <!-- SLIDE 4: PROFIL BILAL / MUADZIN -->
+      <div class="slide" id="slide4">
         <img id="imgMuadzin" src="https://via.placeholder.com/200?text=Foto+Bilal" class="person-img" alt="Bilal">
         <div class="person-role">BILAL / MUADZIN</div>
         <div id="dispMuadzin" class="person-name">-</div>
       </div>
 
-      <!-- SLIDE 4: FOTO MASJID -->
-      <div class="slide" id="slide4">
+      <!-- SLIDE 5: FOTO MASJID -->
+      <div class="slide" id="slide5">
         <img id="imgMasjid" src="https://via.placeholder.com/600x350?text=Foto+Masjid" class="masjid-img" alt="Masjid">
       </div>
     </div>
@@ -122,6 +129,18 @@
   const BIN_ID = "6ac6e08dffd5d16053579b96";
   const ACCESS_KEY = "$2a$10$2gk94J6Zl6Jz5Pe3OOp7W.AxqAKtSjiTMdFfljEODqXoSSHFBGP8K";
 
+  // Helper untuk Memperbaiki URL Gambar (Khusus Imgur agar Tampil)
+  function fixImgurUrl(url) {
+    if (!url) return '';
+    let cleanUrl = url.trim();
+    // Jika link dari imgur.com biasa, ubah ke i.imgur.com + .jpg
+    if (cleanUrl.includes('imgur.com') && !cleanUrl.includes('i.imgur.com')) {
+      const id = cleanUrl.split('/').pop().split('.')[0];
+      return `https://i.imgur.com/${id}.jpg`;
+    }
+    return cleanUrl;
+  }
+
   // 1. Jam Digital & Tanggal Masehi Real-time
   function updateClockAndMasehi() {
     const now = new Date();
@@ -132,7 +151,7 @@
     const secs = String(now.getSeconds()).padStart(2, '0');
     document.getElementById('clock').innerText = `${hrs}:${mins}:${secs}`;
 
-    // Tanggal Masehi (Format: RABU, 8 OKTOBER 2026)
+    // Tanggal Masehi
     const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
     const tglMasehiStr = now.toLocaleDateString('id-ID', options).toUpperCase();
     document.getElementById('dateMasehi').innerText = tglMasehiStr;
@@ -153,7 +172,6 @@
       const json = await res.json();
       const hijri = json.data.hijri;
 
-      // Konversi Nama Bulan ke Bahasa Indonesia
       const bulanIndo = {
         "Muharram": "MUHARRAM", "Safar": "SAFAR", "Rabi' al-awwal": "RABIUL AWAL",
         "Rabi' al-thani": "RABIUL AKHIR", "Jumada al-ula": "JUMADIL AWAL", "Jumada al-akhirah": "JUMADIL AKHIR",
@@ -199,13 +217,20 @@
         document.getElementById('dispPemateri').innerText = data.pemateri || "-";
         document.getElementById('dispWaktuKajian').innerText = data.waktuKajian || "-";
         
+        // Data Khatib
+        document.getElementById('dispKhatib').innerText = data.khatib || data.petugasJumat || "-";
+        if (data.fotoKhatib) document.getElementById('imgKhatib').src = fixImgurUrl(data.fotoKhatib);
+
+        // Data Imam
         document.getElementById('dispImam').innerText = data.imam || "-";
-        if (data.fotoImam) document.getElementById('imgImam').src = data.fotoImam;
+        if (data.fotoImam) document.getElementById('imgImam').src = fixImgurUrl(data.fotoImam);
 
+        // Data Muadzin / Bilal
         document.getElementById('dispMuadzin').innerText = data.muadzin || "-";
-        if (data.fotoMuadzin) document.getElementById('imgMuadzin').src = data.fotoMuadzin;
+        if (data.fotoMuadzin) document.getElementById('imgMuadzin').src = fixImgurUrl(data.fotoMuadzin);
 
-        if (data.fotoMasjid) document.getElementById('imgMasjid').src = data.fotoMasjid;
+        // Foto Masjid
+        if (data.fotoMasjid) document.getElementById('imgMasjid').src = fixImgurUrl(data.fotoMasjid);
 
         document.getElementById('dispRunningText').innerText = data.runningText || "";
       }

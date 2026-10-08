@@ -10,21 +10,32 @@
     body { background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow: hidden; height: 100vh; }
     
     /* Layout Utama Grid */
-    .app-container { display: flex; height: calc(100vh - 45px); }
+    .app-container { display: flex; height: calc(100vh - 50px); }
 
-    /* Sidebar Kiri (Jadwal Sholat) */
-    .sidebar { width: 22%; background-color: #111; color: #fff; padding: 10px; display: flex; flex-direction: column; justify-content: space-between; }
-    .date-box { background: #fff; color: #000; text-align: center; border-radius: 6px; padding: 6px; font-weight: bold; margin-bottom: 8px; }
-    .prayer-item { background: #1b5e20; border-radius: 8px; padding: 8px 12px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
-    .prayer-name { font-size: 1rem; font-weight: 600; }
-    .prayer-time { font-size: 1.2rem; font-weight: bold; }
+    /* Sidebar Kiri (Jadwal Sholat & Tanggal) */
+    .sidebar { width: 25%; background-color: #111; color: #fff; padding: 12px; display: flex; flex-direction: column; justify-content: space-between; }
+    
+    /* Date Box diperbesar */
+    .date-box { background: #fff; color: #000; text-align: center; border-radius: 8px; padding: 10px 6px; font-weight: bold; margin-bottom: 10px; }
+    #dateMasehi { font-size: 1.15rem; font-weight: 800; text-transform: uppercase; color: #111; }
+    #dateHijri { font-size: 1.05rem; color: #1b5e20; font-weight: 700; margin-top: 2px; }
+
+    /* Prayer List diperbesar */
+    .prayer-item { background: #1b5e20; border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+    .prayer-name { font-size: 1.35rem; font-weight: 700; }
+    .prayer-time { font-size: 1.6rem; font-weight: 900; color: #ffd700; }
 
     /* Area Kanan (Main Content) */
-    .main-content { width: 78%; display: flex; flex-direction: column; }
+    .main-content { width: 75%; display: flex; flex-direction: column; }
     
     /* Header Atas Hijau */
-    .header-bar { background-color: #1b5e20; color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #ffd700; }
-    .clock-display { font-size: 2.5rem; font-weight: bold; color: #ffffff; }
+    .header-bar { background-color: #1b5e20; color: white; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid #ffd700; }
+    
+    /* Header Nama Masjid & Alamat diperbesar */
+    #dispNamaMasjid { font-size: 2.3rem; font-weight: 900; letter-spacing: 1px; text-shadow: 1px 1px 3px rgba(0,0,0,0.3); }
+    #dispAlamatMasjid { font-size: 1.25rem; font-weight: 600; color: #e8f5e9; margin-top: 2px; }
+    
+    .clock-display { font-size: 3rem; font-weight: 900; color: #ffffff; letter-spacing: 2px; }
 
     /* Container Slideshow */
     .content-body { flex: 1; background: #ffffff; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
@@ -33,18 +44,18 @@
     .slide.active { opacity: 1; z-index: 10; }
 
     /* Item Tampilan Slide */
-    .agenda-title { font-size: 3rem; font-weight: 900; color: #111; text-transform: uppercase; }
-    .agenda-pemateri { font-size: 2.2rem; font-weight: bold; color: #1b5e20; margin-top: 10px; }
-    .agenda-waktu { font-size: 1.5rem; font-weight: 600; color: #333; margin-top: 15px; background: #e8f5e9; padding: 10px 20px; border-radius: 8px; }
+    .agenda-title { font-size: 3.2rem; font-weight: 900; color: #111; text-transform: uppercase; }
+    .agenda-pemateri { font-size: 2.4rem; font-weight: bold; color: #1b5e20; margin-top: 10px; }
+    .agenda-waktu { font-size: 1.6rem; font-weight: 600; color: #333; margin-top: 15px; background: #e8f5e9; padding: 10px 24px; border-radius: 8px; }
 
-    .person-img { width: 200px; height: 200px; border-radius: 50%; object-fit: cover; border: 5px solid #1b5e20; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
-    .person-role { font-size: 1.5rem; font-weight: bold; color: #1b5e20; text-transform: uppercase; letter-spacing: 2px; }
-    .person-name { font-size: 2.5rem; font-weight: 800; color: #222; }
+    .person-img { width: 220px; height: 220px; border-radius: 50%; object-fit: cover; border: 5px solid #1b5e20; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
+    .person-role { font-size: 1.6rem; font-weight: bold; color: #1b5e20; text-transform: uppercase; letter-spacing: 2px; }
+    .person-name { font-size: 2.8rem; font-weight: 800; color: #222; }
 
-    .masjid-img { width: 100%; max-height: 80%; object-fit: cover; border-radius: 12px; border: 4px solid #1b5e20; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
+    .masjid-img { width: 100%; max-height: 82%; object-fit: cover; border-radius: 12px; border: 4px solid #1b5e20; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
 
     /* Running Text Bawah */
-    .footer-ticker { background: #000; color: #ffd700; height: 45px; line-height: 45px; font-size: 1.4rem; border-top: 2px solid #ffd700; }
+    .footer-ticker { background: #000; color: #ffd700; height: 50px; line-height: 50px; font-size: 1.5rem; font-weight: bold; border-top: 3px solid #ffd700; }
   </style>
 </head>
 <body>
@@ -54,9 +65,9 @@
   <div class="sidebar">
     <div class="date-box">
       <!-- Masehi Otomatis -->
-      <div id="dateMasehi" style="font-size: 0.85rem; text-transform: uppercase;">MEMUAT...</div>
+      <div id="dateMasehi">MEMUAT...</div>
       <!-- Hijriah Otomatis -->
-      <div id="dateHijri" style="font-size: 0.8rem; color: #1b5e20; font-weight: 600;">MEMUAT...</div>
+      <div id="dateHijri">MEMUAT...</div>
     </div>
 
     <div class="prayer-list">
@@ -75,8 +86,8 @@
     <!-- HEADER -->
     <div class="header-bar">
       <div>
-        <h2 id="dispNamaMasjid" class="m-0 fw-bold">MASJID JAMI' AT TAQWA</h2>
-        <p id="dispAlamatMasjid" class="m-0 small text-light">YOGYAKARTA</p>
+        <h2 id="dispNamaMasjid" class="m-0">MASJID JAMI' AT TAQWA</h2>
+        <p id="dispAlamatMasjid" class="m-0">YOGYAKARTA</p>
       </div>
       <div class="clock-display" id="clock">00:00:00</div>
     </div>
@@ -93,21 +104,21 @@
 
       <!-- SLIDE 2: PROFIL KHATIB JUMAT -->
       <div class="slide" id="slide2">
-        <img id="imgKhatib" src="https://via.placeholder.com/200?text=Foto+Khatib" class="person-img" alt="Khatib">
+        <img id="imgKhatib" src="https://via.placeholder.com/220?text=Foto+Khatib" class="person-img" alt="Khatib">
         <div class="person-role">KHATIB JUM'AT</div>
         <div id="dispKhatib" class="person-name">-</div>
       </div>
 
       <!-- SLIDE 3: PROFIL IMAM -->
       <div class="slide" id="slide3">
-        <img id="imgImam" src="https://via.placeholder.com/200?text=Foto+Imam" class="person-img" alt="Imam">
+        <img id="imgImam" src="https://via.placeholder.com/220?text=Foto+Imam" class="person-img" alt="Imam">
         <div class="person-role">IMAM MASJID</div>
         <div id="dispImam" class="person-name">-</div>
       </div>
 
       <!-- SLIDE 4: PROFIL BILAL / MUADZIN -->
       <div class="slide" id="slide4">
-        <img id="imgMuadzin" src="https://via.placeholder.com/200?text=Foto+Bilal" class="person-img" alt="Bilal">
+        <img id="imgMuadzin" src="https://via.placeholder.com/220?text=Foto+Bilal" class="person-img" alt="Bilal">
         <div class="person-role">BILAL / MUADZIN</div>
         <div id="dispMuadzin" class="person-name">-</div>
       </div>
@@ -133,7 +144,6 @@
   function fixImgurUrl(url) {
     if (!url) return '';
     let cleanUrl = url.trim();
-    // Jika link dari imgur.com biasa, ubah ke i.imgur.com + .jpg
     if (cleanUrl.includes('imgur.com') && !cleanUrl.includes('i.imgur.com')) {
       const id = cleanUrl.split('/').pop().split('.')[0];
       return `https://i.imgur.com/${id}.jpg`;

@@ -22,9 +22,9 @@
   </div>
 
   <form id="adminForm">
-    <!-- 1. IDENTITAS & GAMBAR -->
+    <!-- 1. IDENTITAS & FOTO MASJID -->
     <div class="card card-custom">
-      <div class="card-header card-header-custom">1. Identitas & Gambar Masjid</div>
+      <div class="card-header card-header-custom">1. Identitas & Foto Masjid</div>
       <div class="card-body">
         <div class="row g-3">
           <div class="col-md-6">
@@ -35,19 +35,15 @@
             <label class="form-label font-semibold">Alamat / Kota</label>
             <input type="text" id="alamatMasjid" class="form-control" placeholder="Contoh: JL. RAYA KAUMAN WEDUNG">
           </div>
-          <div class="col-md-6">
-            <label class="form-label font-semibold">URL Foto Masjid Main Slide</label>
+          <div class="col-12">
+            <label class="form-label font-semibold">URL Foto Masjid (Untuk Slide Display)</label>
             <input type="url" id="fotoMasjid" class="form-control" placeholder="https://link-foto.com/masjid.jpg">
-          </div>
-          <div class="col-md-6">
-            <label class="form-label font-semibold text-primary">URL Gambar Samping Kiri (Di atas Sholat)</label>
-            <input type="url" id="gambarKiri" class="form-control" placeholder="https://link-foto.com/banner-samping.jpg">
           </div>
         </div>
       </div>
     </div>
 
-    <!-- 2. PETUGAS SHOLAT -->
+    <!-- 2. PETUGAS & FOTO PROFIL -->
     <div class="card card-custom">
       <div class="card-header card-header-custom">2. Petugas Sholat & Foto Profil</div>
       <div class="card-body">
@@ -76,9 +72,9 @@
       </div>
     </div>
 
-    <!-- 3. AGENDA & RUNNING TEXT -->
+    <!-- 3. AGENDA KAJIAN / PENGUMUMAN -->
     <div class="card card-custom">
-      <div class="card-header card-header-custom">3. Agenda Kajian & Running Text</div>
+      <div class="card-header card-header-custom">3. Agenda Kajian / Pengumuman</div>
       <div class="card-body">
         <div class="row g-3">
           <div class="col-md-6">
@@ -91,13 +87,18 @@
           </div>
           <div class="col-12">
             <label class="form-label font-semibold">Waktu & Tempat Kajian</label>
-            <input type="text" id="waktuKajian" class="form-control" placeholder="Contoh: Ba'da Maghrib - Selesai">
-          </div>
-          <div class="col-12">
-            <label class="form-label font-semibold">Running Text</label>
-            <textarea id="runningText" class="form-control" rows="2" placeholder="Masukkan pesan berjalan..."></textarea>
+            <input type="text" id="waktuKajian" class="form-control" placeholder="Contoh: Ba'da Maghrib - Selesai di Ruang Utama">
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- 4. RUNNING TEXT -->
+    <div class="card card-custom">
+      <div class="card-header card-header-custom">4. Teks Berjalan (Running Text)</div>
+      <div class="card-body">
+        <label class="form-label font-semibold">Pesan Running Text</label>
+        <textarea id="runningText" class="form-control" rows="2" placeholder="Masukkan teks pengumuman/himbauan di sini..."></textarea>
       </div>
     </div>
 
@@ -109,17 +110,21 @@
 </div>
 
 <script>
-  const BIN_ID = "6ac6e08dffd5d16053579b96";
-  const ACCESS_KEY = "$2a$10$2gk94J6Zl6Jz5Pe3OOp7W.AxqAKtSjiTMdFfljEODqXoSSHFBGP8K";
+  const BIN_ID = "6ac5370aac6210605a19fc45";
+  const ACCESS_KEY = "$2a$10$1QcRWM9V75Gi9P5KELGYU.AtsQXL3hadbNeMh2CApTcv0IQGkeJIO";
 
+  // Ambil Data Terkini
   async function loadDataFromCloud() {
     try {
       const response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
         method: 'GET',
-        headers: { "X-Master-Key": ACCESS_KEY, "X-Access-Key": ACCESS_KEY }
+        headers: {
+          "X-Master-Key": ACCESS_KEY,
+          "X-Access-Key": ACCESS_KEY
+        }
       });
 
-      if (!response.ok) throw new Error("Gagal mengambil data.");
+      if (!response.ok) throw new Error("Gagal mengambil data dari cloud.");
 
       const resJson = await response.json();
       const data = resJson.record || resJson;
@@ -128,7 +133,6 @@
         document.getElementById('namaMasjid').value = data.namaMasjid || "";
         document.getElementById('alamatMasjid').value = data.alamatMasjid || "";
         document.getElementById('fotoMasjid').value = data.fotoMasjid || "";
-        document.getElementById('gambarKiri').value = data.gambarKiri || "";
 
         document.getElementById('khatib').value = data.khatib || "";
         document.getElementById('fotoKhatib').value = data.fotoKhatib || "";
@@ -146,16 +150,16 @@
         document.getElementById('runningText').value = data.runningText || "";
       }
     } catch (error) {
-      console.log("Error loading data", error);
+      alert("Peringatan saat memuat data: " + error.message);
     }
   }
 
+  // Simpan Data Ke Cloud (JSONBin)
   async function saveDataToCloud() {
     const payload = {
       namaMasjid: document.getElementById('namaMasjid').value,
       alamatMasjid: document.getElementById('alamatMasjid').value,
       fotoMasjid: document.getElementById('fotoMasjid').value,
-      gambarKiri: document.getElementById('gambarKiri').value,
 
       khatib: document.getElementById('khatib').value,
       fotoKhatib: document.getElementById('fotoKhatib').value,
@@ -186,12 +190,13 @@
       });
 
       if (response.ok) {
-        alert("✅ Data berhasil disimpan! Gambar dan info di display masjid akan langsung diperbarui.");
+        alert("✅ Data berhasil disimpan! Tampilan Masjid akan terupdate otomatis.");
       } else {
-        alert("❌ Gagal menyimpan data.");
+        const errData = await response.json();
+        alert("❌ Gagal menyimpan data: " + (errData.message || "Periksa koneksi/kunci JSONBin."));
       }
     } catch (error) {
-      alert("❌ Terjadi kesalahan: " + error.message);
+      alert("❌ Terjadi kesalahan jaringan: " + error.message);
     }
   }
 

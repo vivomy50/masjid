@@ -4,258 +4,153 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Display Masjid</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    * { box-sizing: border-box; }
-    body {
-      background-color: #0b132b;
-      color: white;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      overflow: hidden;
-      height: 100vh;
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .main-container {
-      flex: 1;
-      display: flex;
-      height: calc(100vh - 50px);
-    }
-
-    /* SIDEBAR KIRI */
-    .sidebar-left {
-      width: 25%;
-      background-color: #0d1b2a;
-      padding: 15px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      border-right: 2px solid #1c2541;
-      height: 100%;
-    }
-
-    .date-box {
-      background: #ffffff;
-      color: #000000;
-      border-radius: 8px;
-      padding: 10px;
-      text-align: center;
-      font-weight: bold;
-    }
-
-    .date-masehi {
-      font-size: 0.95rem;
-      text-transform: uppercase;
-      margin-bottom: 2px;
-    }
-
-    .date-hijri {
-      font-size: 0.9rem;
-      color: #333;
-    }
-
-    /* BANNER SAMPING KIRI */
-    .banner-left-container {
-      flex-grow: 1;
-      margin: 12px 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      border-radius: 10px;
-      background-color: rgba(255, 255, 255, 0.05);
-    }
-
-    .banner-left-img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 10px;
-    }
-
-    /* JADWAL SHOLAT */
-    .sholat-item {
-      background-color: #1b5e20;
-      border-radius: 8px;
-      padding: 5px 12px;
-      margin-bottom: 5px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-weight: bold;
-      font-size: 1rem;
-    }
-
-    /* AREA KANAN UTAMA */
-    .main-content {
-      width: 75%;
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-    }
-
-    .header-title {
-      background-color: #1b5e20;
-      padding: 15px 25px;
-      border-bottom: 3px solid #fbc02d;
-    }
-
-    .header-title h2 {
-      margin: 0;
-      font-weight: 800;
-      letter-spacing: 1px;
-      font-size: 1.8rem;
-    }
-
-    .header-title p {
-      margin: 0;
-      font-size: 0.95rem;
-      opacity: 0.9;
-    }
-
-    /* AREA SLIDE / FOTO UTAMA */
-    .slide-container {
-      flex: 1;
-      padding: 15px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background-color: #0b132b;
-      overflow: hidden;
-    }
-
-    .slide-img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-    }
-
-    /* FOOTER / RUNNING TEXT */
-    .footer-running-text {
-      height: 50px;
-      background-color: #1b5e20;
-      color: #ffffff;
-      border-top: 2px solid #fbc02d;
-      display: flex;
-      align-items: center;
-      overflow: hidden;
-      font-size: 1.2rem;
-      font-weight: 600;
-      white-space: nowrap;
-    }
-
-    .running-text-content {
-      display: inline-block;
-      padding-left: 100%;
-      animation: marquee 25s linear infinite;
-    }
-
     @keyframes marquee {
-      0%   { transform: translate(0, 0); }
-      100% { transform: translate(-100%, 0); }
+      0% { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
+    }
+    .animate-marquee {
+      display: inline-block;
+      white-space: nowrap;
+      animation: marquee 25s linear infinite;
     }
   </style>
 </head>
-<body>
+<body class="bg-slate-900 text-white min-h-screen flex flex-col justify-between overflow-hidden font-sans">
 
-<div class="main-container">
-  <!-- SIDEBAR KIRI -->
-  <div class="sidebar-left">
-    <div class="date-box">
-      <div id="tanggalMasehi" class="date-masehi">KAMIS, 8 OKTOBER 2026</div>
-      <div id="tanggalHijriah" class="date-hijri">27 Rabiulakhir 1448 H</div>
+  <!-- Header Display -->
+  <header class="bg-emerald-800 p-4 shadow-lg flex justify-between items-center border-b-4 border-amber-400">
+    <div>
+      <h1 id="namaMasjid" class="text-3xl font-extrabold tracking-wide text-amber-300">MASJID AL-IKHLAS</h1>
+      <p id="alamatMasjid" class="text-sm text-emerald-100">Jl. Raya Utama No. 123</p>
+    </div>
+    <div class="text-right">
+      <div id="jamDigital" class="text-4xl font-black tracking-wider text-white">00:00:00</div>
+      <div id="tglDigital" class="text-xs text-emerald-200 mt-1">Kamis, 8 Oktober 2026</div>
+    </div>
+  </header>
+
+  <!-- Main Content Grid -->
+  <main class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6 flex-grow">
+
+    <!-- Card 1: Pengumuman / Info Utama -->
+    <div class="bg-slate-800/80 p-5 rounded-2xl border border-slate-700 shadow-xl flex flex-col justify-between">
+      <div>
+        <h2 class="text-xl font-bold text-amber-400 border-b border-slate-700 pb-2 mb-3">📢 Pengumuman</h2>
+        <div id="pengumumanText" class="text-slate-200 text-lg leading-relaxed">
+          Memuat pengumuman masjid...
+        </div>
+      </div>
+      <div class="mt-4 bg-emerald-950/60 p-3 rounded-xl border border-emerald-800/50">
+        <span class="text-xs text-emerald-400 block font-semibold uppercase">Petugas Jumat Ini</span>
+        <p id="petugasJumat" class="text-sm text-emerald-100 font-medium mt-1">-</p>
+      </div>
     </div>
 
-    <!-- AREA GAMBAR BANNER KIRI -->
-    <div class="banner-left-container">
-      <img id="gambarKiri" src="https://via.placeholder.com/400x500?text=Banner+Samping" class="banner-left-img" alt="Banner Samping">
+    <!-- Card 2: Laporan Kas Masjid -->
+    <div class="bg-slate-800/80 p-5 rounded-2xl border border-slate-700 shadow-xl flex flex-col justify-between">
+      <div>
+        <h2 class="text-xl font-bold text-amber-400 border-b border-slate-700 pb-2 mb-3">💰 Laporan Kas</h2>
+        <div class="space-y-3">
+          <div class="flex justify-between items-center bg-slate-900/60 p-3 rounded-xl border border-slate-700">
+            <span class="text-slate-400 text-sm">Pemasukan</span>
+            <span id="kasMasuk" class="text-green-400 font-bold text-lg">Rp 0</span>
+          </div>
+          <div class="flex justify-between items-center bg-slate-900/60 p-3 rounded-xl border border-slate-700">
+            <span class="text-slate-400 text-sm">Pengeluaran</span>
+            <span id="kasKeluar" class="text-red-400 font-bold text-lg">Rp 0</span>
+          </div>
+          <div class="flex justify-between items-center bg-emerald-900/40 p-3 rounded-xl border border-emerald-700/50">
+            <span class="text-emerald-300 font-semibold text-sm">Saldo Akhir</span>
+            <span id="kasSaldo" class="text-amber-300 font-black text-xl">Rp 0</span>
+          </div>
+        </div>
+      </div>
+      <a href="admin.html" class="text-xs text-slate-500 hover:text-slate-300 text-center block mt-4">Kelola Data (Admin)</a>
     </div>
 
-    <!-- JADWAL SHOLAT -->
-    <div class="sholat-container">
-      <div class="sholat-item"><span>Imsak</span><span id="imsak">04:02</span></div>
-      <div class="sholat-item"><span>Subuh</span><span id="subuh">04:12</span></div>
-      <div class="sholat-item"><span>Syuruq</span><span id="syuruq">05:31</span></div>
-      <div class="sholat-item"><span>Dzuhur</span><span id="dzuhur">11:52</span></div>
-      <div class="sholat-item"><span>Ashar</span><span id="ashar">15:15</span></div>
-      <div class="sholat-item"><span>Maghrib</span><span id="maghrib">18:08</span></div>
-      <div class="sholat-item"><span>Isya</span><span id="isya">19:22</span></div>
-    </div>
-  </div>
-
-  <!-- AREA KANAN (HEADER & SLIDE FOTO) -->
-  <div class="main-content">
-    <div class="header-title">
-      <h2 id="dispNamaMasjid">MASJID BESAR AL FALAH WEDUNG</h2>
-      <p id="dispAlamatMasjid">JL. RAYA KAUMAN WEDUNG</p>
+    <!-- Card 3: Agenda Kegiatan -->
+    <div class="bg-slate-800/80 p-5 rounded-2xl border border-slate-700 shadow-xl">
+      <h2 class="text-xl font-bold text-amber-400 border-b border-slate-700 pb-2 mb-3">🗓️ Agenda Kegiatan</h2>
+      <div id="agendaList" class="space-y-2 text-sm text-slate-200 max-h-60 overflow-y-auto">
+        <p class="text-slate-500 italic">Memuat agenda...</p>
+      </div>
     </div>
 
-    <!-- SLIDE GAMBAR UTAMA -->
-    <div class="slide-container">
-      <img id="fotoMasjid" src="https://via.placeholder.com/1200x600?text=Foto+Masjid+Utama" class="slide-img" alt="Foto Masjid / Banner Utama">
+  </main>
+
+  <!-- Running Text (Teks Berjalan) -->
+  <footer class="bg-amber-500 text-slate-950 font-bold py-2 overflow-hidden shadow-inner flex items-center">
+    <div class="bg-amber-600 px-4 py-1 text-xs uppercase tracking-wider text-white font-black z-10 shadow">
+      INFO
     </div>
-  </div>
-</div>
+    <div class="overflow-hidden w-full relative">
+      <div id="runningText" class="animate-marquee text-lg font-semibold">
+        Selamat datang di Masjid Al-Ikhlas. Luruskan dan rapatkan shaf saat sholat berjamaah.
+      </div>
+    </div>
+  </footer>
 
-<!-- RUNNING TEXT FOOTER -->
-<div class="footer-running-text">
-  <div class="running-text-content" id="dispRunningText">
-    Selamat Datang di Masjid Besar Al Falah Wedung. Jagalah kebersihan dan ketertiban di dalam masjid.
-  </div>
-</div>
+  <script>
+    // Konfigurasi JSONBin
+    const BIN_ID = "6ac6e08dffd5d16053579b96";
+    const ACCESS_KEY = "$2a$10$2gk94J6Zl6Jz5Pe3OOp7W.AxqAKtSjiTMdFfljEODqXoSSHFBGP8K";
+    const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}/latest`;
 
-<script>
-  const BIN_ID = "6ac5370aac6210605a19fc45";
-  const ACCESS_KEY = "$2a$10$1QcRWM9V75Gi9P5KELGYU.AtsQXL3hadbNeMh2CApTcv0IQGkeJIO";
-
-  // Perbaikan Tanggal Hijriah agar TIDAK H Ganda
-  function updateClockAndDate() {
-    const now = new Date();
-    const optionsMasehi = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
-    document.getElementById('tanggalMasehi').innerText = now.toLocaleDateString('id-ID', optionsMasehi).toUpperCase();
-
-    try {
-      const optionsHijri = { day: 'numeric', month: 'long', year: 'numeric' };
-      const hijriFormatter = new Intl.DateTimeFormat('id-ID-u-ca-islamic-umalqura', optionsHijri);
-      let rawHijri = hijriFormatter.format(now);
-      
-      // Bersihkan karakter 'H' bawaan jika sudah ada agar tidak ganda
-      rawHijri = rawHijri.replace(/\s*H\s*/g, '').trim();
-      document.getElementById('tanggalHijriah').innerText = rawHijri + " H";
-    } catch (e) {
-      document.getElementById('tanggalHijriah').innerText = "27 Rabiulakhir 1448 H";
+    // Clock
+    function updateClock() {
+      const now = new Date();
+      document.getElementById('jamDigital').innerText = now.toLocaleTimeString('id-ID', { hour12: false });
+      document.getElementById('tglDigital').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     }
-  }
+    setInterval(updateClock, 1000);
+    updateClock();
 
-  // Load Data dari JSONBin Cloud
-  async function loadData() {
-    try {
-      const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
-        headers: { "X-Master-Key": ACCESS_KEY, "X-Access-Key": ACCESS_KEY }
-      });
-      if (res.ok) {
+    // Load Data
+    async function fetchDisplayData() {
+      try {
+        const res = await fetch(API_URL, {
+          headers: { "X-Access-Key": ACCESS_KEY }
+        });
+        if (!res.ok) throw new Error("Gagal mengambil data");
         const json = await res.json();
-        const data = json.record || json;
+        const data = json.record || {};
 
-        if (data.namaMasjid) document.getElementById('dispNamaMasjid').innerText = data.namaMasjid;
-        if (data.alamatMasjid) document.getElementById('dispAlamatMasjid').innerText = data.alamatMasjid;
-        if (data.gambarKiri) document.getElementById('gambarKiri').src = data.gambarKiri;
-        if (data.fotoMasjid) document.getElementById('fotoMasjid').src = data.fotoMasjid;
-        if (data.runningText) document.getElementById('dispRunningText').innerText = data.runningText;
+        // Apply Data
+        if (data.profil) {
+          document.getElementById('namaMasjid').innerText = data.profil.nama || "MASJID AL-IKHLAS";
+          document.getElementById('alamatMasjid').innerText = data.profil.alamat || "-";
+        }
+        document.getElementById('pengumumanText').innerText = data.pengumuman || "Tidak ada pengumuman saat ini.";
+        document.getElementById('petugasJumat').innerText = data.petugasJumat || "-";
+        document.getElementById('runningText').innerText = data.runningText || "Selamat datang di Masjid.";
+
+        if (data.kas) {
+          document.getElementById('kasMasuk').innerText = `Rp ${Number(data.kas.masuk || 0).toLocaleString('id-ID')}`;
+          document.getElementById('kasKeluar').innerText = `Rp ${Number(data.kas.keluar || 0).toLocaleString('id-ID')}`;
+          const saldo = (Number(data.kas.masuk) || 0) - (Number(data.kas.keluar) || 0);
+          document.getElementById('kasSaldo').innerText = `Rp ${saldo.toLocaleString('id-ID')}`;
+        }
+
+        if (data.agenda && Array.isArray(data.agenda)) {
+          const list = data.agenda.map(item => `
+            <div class="bg-slate-900/50 p-2 rounded border border-slate-700/50">
+              <div class="text-amber-300 font-semibold text-xs">${item.tgl || '-'}</div>
+              <div class="font-medium text-slate-100">${item.kegiatan || '-'}</div>
+            </div>
+          `).join('');
+          document.getElementById('agendaList').innerHTML = list || `<p class="text-slate-500 italic">Belum ada agenda.</p>`;
+        }
+
+      } catch (err) {
+        console.error("Error loading display data:", err);
       }
-    } catch (err) {
-      console.log("Gagal memuat data cloud", err);
     }
-  }
 
-  setInterval(updateClockAndDate, 1000);
-  updateClockAndDate();
-  loadData();
-  setInterval(loadData, 10000); // Sinkronisasi otomatis tiap 10 detik
-</script>
+    fetchDisplayData();
+    // Auto-refresh data setiap 30 detik
+    setInterval(fetchDisplayData, 30000);
+  </script>
 </body>
 </html>

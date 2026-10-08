@@ -87,20 +87,20 @@
 
     <!-- TOMBOL SIMPAN -->
     <div class="text-center mt-4">
-      <button type="button" class="btn btn-save btn-lg shadow" onclick="saveDataToCloud()">💾 Simpan & Perbarui Display</button>
+      <button type="button" id="btnSimpan" class="btn btn-save btn-lg shadow" onclick="saveDataToCloud()">💾 Simpan & Perbarui Display</button>
     </div>
   </form>
 </div>
 
 <script>
   const BIN_ID = "6ac5370aac6210605a19fc45";
-  const ACCESS_KEY = "$2a$10$1QcRWM9V75Gi9P5KELGYU.AtsQXL3hadbNeMh2CApTcv0IQGkeJIO";
+  const MASTER_KEY = "$2a$10$1QcRWM9V75Gi9P5KELGYU.AtsQXL3hadbNeMh2CApTcv0IQGkeJIO";
 
   async function loadDataFromCloud() {
     try {
       const response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
         method: 'GET',
-        headers: { "X-Master-Key": ACCESS_KEY, "X-Access-Key": ACCESS_KEY }
+        headers: { "X-Master-Key": MASTER_KEY }
       });
 
       if (!response.ok) throw new Error("Gagal mengambil data.");
@@ -131,6 +131,10 @@
   }
 
   async function saveDataToCloud() {
+    const btn = document.getElementById('btnSimpan');
+    btn.disabled = true;
+    btn.innerText = "⏳ Menyimpan...";
+
     const payload = {
       namaMasjid: document.getElementById('namaMasjid').value,
       alamatMasjid: document.getElementById('alamatMasjid').value,
@@ -154,20 +158,22 @@
         method: 'PUT',
         headers: {
           "Content-Type": "application/json",
-          "X-Master-Key": ACCESS_KEY,
-          "X-Access-Key": ACCESS_KEY,
-          "X-Bin-Versioning": "false"
+          "X-Master-Key": MASTER_KEY
         },
         body: JSON.stringify(payload)
       });
 
       if (response.ok) {
-        alert("✅ Data berhasil disimpan! Slide foto dan running text akan otomatis tampil.");
+        alert("✅ Data berhasil disimpan! Slide foto dan running text akan otomatis tampil di layar display.");
       } else {
-        alert("❌ Gagal menyimpan data.");
+        const errJson = await response.json();
+        alert("❌ Gagal menyimpan data: " + (errJson.message || response.statusText));
       }
     } catch (error) {
-      alert("❌ Terjadi kesalahan: " + error.message);
+      alert("❌ Terjadi kesalahan koneksi: " + error.message);
+    } finally {
+      btn.disabled = false;
+      btn.innerText = "💾 Simpan & Perbarui Display";
     }
   }
 

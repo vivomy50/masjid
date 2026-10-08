@@ -3,181 +3,206 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Dashboard Display Masjid</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    body { background-color: #f4f6f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding-bottom: 50px; }
-    .card-custom { border-radius: 12px; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 20px; }
-    .card-header-custom { background-color: #1b5e20; color: white; border-radius: 12px 12px 0 0 !important; font-weight: bold; }
-    .btn-save { background-color: #1b5e20; color: white; font-weight: bold; padding: 12px 30px; border-radius: 8px; }
-    .btn-save:hover { background-color: #144417; color: white; }
-  </style>
+  <title>Admin Panel - Pengurus Masjid</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-gray-100 min-h-screen text-gray-800 font-sans">
 
-<div class="container mt-4" style="max-width: 900px;">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h3 class="fw-bold text-success m-0">Panel Admin Display Masjid</h3>
-    <button class="btn btn-outline-secondary btn-sm" onclick="loadDataFromCloud()">🔄 Muat Ulang Data</button>
-  </div>
+  <!-- Header -->
+  <header class="bg-emerald-800 text-white p-4 shadow-md">
+    <div class="max-w-4xl mx-auto flex justify-between items-center">
+      <h1 class="text-xl font-bold">Admin Panel Pengurus Masjid</h1>
+      <a href="index.html" class="bg-emerald-700 hover:bg-emerald-900 text-sm px-3 py-1.5 rounded transition">Ke Tampilan TV</a>
+    </div>
+  </header>
 
-  <form id="adminForm">
-    <!-- 1. IDENTITAS & GAMBAR -->
-    <div class="card card-custom">
-      <div class="card-header card-header-custom">1. Identitas & Gambar Display</div>
-      <div class="card-body">
-        <div class="row g-3">
-          <div class="col-md-6">
-            <label class="form-label font-semibold">Nama Masjid</label>
-            <input type="text" id="namaMasjid" class="form-control" placeholder="Contoh: MASJID BESAR AL FALAH WEDUNG">
+  <main class="max-w-4xl mx-auto p-4 space-y-6">
+
+    <div id="alertBox" class="hidden p-3 rounded text-sm"></div>
+
+    <form id="adminForm" onsubmit="saveData(event)" class="space-y-6">
+
+      <!-- Profil Masjid -->
+      <div class="bg-white p-5 rounded-lg shadow space-y-3">
+        <h2 class="text-lg font-bold border-b pb-2 text-emerald-800">1. Profil Masjid</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Nama Masjid</label>
+            <input type="text" id="namaMasjid" required class="w-full border p-2 rounded outline-none focus:ring-2 focus:ring-emerald-500">
           </div>
-          <div class="col-md-6">
-            <label class="form-label font-semibold">Alamat / Kota</label>
-            <input type="text" id="alamatMasjid" class="form-control" placeholder="Contoh: JL. RAYA KAUMAN WEDUNG">
-          </div>
-          <div class="col-md-6">
-            <label class="form-label font-semibold">URL Foto Slide Utama (Kanan)</label>
-            <input type="url" id="fotoMasjid" class="form-control" placeholder="https://link-foto.com/masjid.jpg">
-          </div>
-          <div class="col-md-6">
-            <label class="form-label font-semibold">URL Gambar Samping Kiri (Atas Sholat)</label>
-            <input type="url" id="gambarKiri" class="form-control" placeholder="https://link-foto.com/banner-samping.jpg">
+          <div>
+            <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Alamat Singkat</label>
+            <input type="text" id="alamatMasjid" class="w-full border p-2 rounded outline-none focus:ring-2 focus:ring-emerald-500">
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- 2. PETUGAS SHOLAT -->
-    <div class="card card-custom">
-      <div class="card-header card-header-custom">2. Petugas Sholat & Foto Profil</div>
-      <div class="card-body">
-        <div class="row g-3">
-          <div class="col-md-4">
-            <label class="form-label fw-bold text-success">Khatib</label>
-            <input type="text" id="khatib" class="form-control mb-2" placeholder="Nama Khatib">
-            <label class="form-label small text-muted">URL Foto Khatib</label>
-            <input type="url" id="fotoKhatib" class="form-control" placeholder="https://link-foto.com/khatib.jpg">
+      <!-- Teks & Pengumuman -->
+      <div class="bg-white p-5 rounded-lg shadow space-y-3">
+        <h2 class="text-lg font-bold border-b pb-2 text-emerald-800">2. Informasi & Teks Tampilan</h2>
+        <div>
+          <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Running Text (Teks Berjalan)</label>
+          <input type="text" id="runningText" required class="w-full border p-2 rounded outline-none focus:ring-2 focus:ring-emerald-500">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Pengumuman Utama</label>
+          <textarea id="pengumuman" rows="3" class="w-full border p-2 rounded outline-none focus:ring-2 focus:ring-emerald-500"></textarea>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Petugas Jumat (Khotib, Imam, Muadzin)</label>
+          <input type="text" id="petugasJumat" placeholder="Khotib: Ustadz A | Imam: Ustadz B" class="w-full border p-2 rounded outline-none focus:ring-2 focus:ring-emerald-500">
+        </div>
+      </div>
+
+      <!-- Laporan Kas -->
+      <div class="bg-white p-5 rounded-lg shadow space-y-3">
+        <h2 class="text-lg font-bold border-b pb-2 text-emerald-800">3. Laporan Kas Masjid</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Total Pemasukan (Rp)</label>
+            <input type="number" id="kasMasuk" required class="w-full border p-2 rounded outline-none focus:ring-2 focus:ring-emerald-500">
           </div>
-
-          <div class="col-md-4">
-            <label class="form-label fw-bold text-success">Imam</label>
-            <input type="text" id="imam" class="form-control mb-2" placeholder="Nama Imam">
-            <label class="form-label small text-muted">URL Foto Imam</label>
-            <input type="url" id="fotoImam" class="form-control" placeholder="https://link-foto.com/imam.jpg">
-          </div>
-
-          <div class="col-md-4">
-            <label class="form-label fw-bold text-success">Bilal / Muadzin</label>
-            <input type="text" id="muadzin" class="form-control mb-2" placeholder="Nama Bilal">
-            <label class="form-label small text-muted">URL Foto Bilal</label>
-            <input type="url" id="fotoMuadzin" class="form-control" placeholder="https://link-foto.com/bilal.jpg">
+          <div>
+            <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Total Pengeluaran (Rp)</label>
+            <input type="number" id="kasKeluar" required class="w-full border p-2 rounded outline-none focus:ring-2 focus:ring-emerald-500">
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- 3. RUNNING TEXT -->
-    <div class="card card-custom">
-      <div class="card-header card-header-custom">3. Teks Berjalan (Running Text)</div>
-      <div class="card-body">
-        <label class="form-label font-semibold">Pesan Running Text</label>
-        <textarea id="runningText" class="form-control" rows="3" placeholder="Masukkan pesan berjalan di bagian bawah layar..."></textarea>
+      <!-- Agenda Kegiatan -->
+      <div class="bg-white p-5 rounded-lg shadow space-y-3">
+        <div class="flex justify-between items-center border-b pb-2">
+          <h2 class="text-lg font-bold text-emerald-800">4. Agenda Kegiatan</h2>
+          <button type="button" onclick="addAgendaRow()" class="text-xs bg-emerald-100 text-emerald-700 hover:bg-emerald-200 px-3 py-1 rounded font-semibold">+ Tambah Agenda</button>
+        </div>
+        <div id="agendaContainer" class="space-y-2">
+          <!-- Dynamically Added -->
+        </div>
       </div>
-    </div>
 
-    <!-- TOMBOL SIMPAN -->
-    <div class="text-center mt-4">
-      <button type="button" id="btnSimpan" class="btn btn-save btn-lg shadow" onclick="saveDataToCloud()">💾 Simpan & Perbarui Display</button>
-    </div>
-  </form>
-</div>
+      <!-- Tombol Simpan -->
+      <div class="text-right">
+        <button type="submit" id="btnSubmit" class="bg-emerald-700 hover:bg-emerald-800 text-white font-bold px-6 py-2.5 rounded-lg shadow-lg transition">
+          💾 Simpan Semua Perubahan
+        </button>
+      </div>
 
-<script>
-  const BIN_ID = "6ac5370aac6210605a19fc45";
-  const MASTER_KEY = "$2a$10$1QcRWM9V75Gi9P5KELGYU.AtsQXL3hadbNeMh2CApTcv0IQGkeJIO";
+    </form>
 
-  async function loadDataFromCloud() {
-    try {
-      const response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
-        method: 'GET',
-        headers: { "X-Master-Key": MASTER_KEY }
+  </main>
+
+  <script>
+    // Konfigurasi JSONBin
+    const BIN_ID = "6ac6e08dffd5d16053579b96";
+    const MASTER_KEY = "$2a$10$w/TGjiTxD5bhYT6I8eykduVebFQk3bOUnZWpN.ckTYiscO6nIXyx";
+    const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+
+    function showAlert(msg, isSuccess = true) {
+      const alertBox = document.getElementById('alertBox');
+      alertBox.className = `p-3 rounded text-sm ${isSuccess ? 'bg-green-100 text-green-700 border border-green-300' : 'bg-red-100 text-red-700 border border-red-300'}`;
+      alertBox.innerText = msg;
+      alertBox.classList.remove('hidden');
+      setTimeout(() => alertBox.classList.add('hidden'), 4000);
+    }
+
+    function addAgendaRow(tgl = '', kegiatan = '') {
+      const container = document.getElementById('agendaContainer');
+      const row = document.createElement('div');
+      row.className = 'flex gap-2 items-center agenda-row';
+      row.innerHTML = `
+        <input type="text" placeholder="Tanggal / Waktu" value="${tgl}" class="agenda-tgl w-1/3 border p-2 rounded text-sm outline-none">
+        <input type="text" placeholder="Nama Kegiatan" value="${kegiatan}" class="agenda-nama w-2/3 border p-2 rounded text-sm outline-none">
+        <button type="button" onclick="this.parentElement.remove()" class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs">X</button>
+      `;
+      container.appendChild(row);
+    }
+
+    async function loadAdminData() {
+      try {
+        const res = await fetch(`${API_URL}/latest`, {
+          headers: { "X-Master-Key": MASTER_KEY }
+        });
+        if (!res.ok) throw new Error("Gagal memuat data dari server.");
+        const json = await res.json();
+        const data = json.record || {};
+
+        if (data.profil) {
+          document.getElementById('namaMasjid').value = data.profil.nama || '';
+          document.getElementById('alamatMasjid').value = data.profil.alamat || '';
+        }
+        document.getElementById('runningText').value = data.runningText || '';
+        document.getElementById('pengumuman').value = data.pengumuman || '';
+        document.getElementById('petugasJumat').value = data.petugasJumat || '';
+
+        if (data.kas) {
+          document.getElementById('kasMasuk').value = data.kas.masuk || 0;
+          document.getElementById('kasKeluar').value = data.kas.keluar || 0;
+        }
+
+        document.getElementById('agendaContainer').innerHTML = '';
+        if (data.agenda && Array.isArray(data.agenda)) {
+          data.agenda.forEach(a => addAgendaRow(a.tgl, a.kegiatan));
+        } else {
+          addAgendaRow('Setiap Subuh', 'Kultum Subuh');
+        }
+
+      } catch (err) {
+        showAlert(`❌ ${err.message}`, false);
+      }
+    }
+
+    async function saveData(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btnSubmit');
+      btn.disabled = true;
+      btn.innerText = "Menyimpan...";
+
+      // Kumpulkan data agenda
+      const agendaRows = document.querySelectorAll('.agenda-row');
+      const agenda = [];
+      agendaRows.forEach(row => {
+        const tgl = row.querySelector('.agenda-tgl').value.trim();
+        const kegiatan = row.querySelector('.agenda-nama').value.trim();
+        if (tgl || kegiatan) agenda.push({ tgl, kegiatan });
       });
 
-      if (!response.ok) throw new Error("Gagal mengambil data.");
-
-      const resJson = await response.json();
-      const data = resJson.record || resJson;
-
-      if (data) {
-        document.getElementById('namaMasjid').value = data.namaMasjid || "";
-        document.getElementById('alamatMasjid').value = data.alamatMasjid || "";
-        document.getElementById('fotoMasjid').value = data.fotoMasjid || "";
-        document.getElementById('gambarKiri').value = data.gambarKiri || "";
-
-        document.getElementById('khatib').value = data.khatib || "";
-        document.getElementById('fotoKhatib').value = data.fotoKhatib || "";
-
-        document.getElementById('imam').value = data.imam || "";
-        document.getElementById('fotoImam').value = data.fotoImam || "";
-
-        document.getElementById('muadzin').value = data.muadzin || "";
-        document.getElementById('fotoMuadzin').value = data.fotoMuadzin || "";
-
-        document.getElementById('runningText').value = data.runningText || "";
-      }
-    } catch (error) {
-      console.log("Error loading data", error);
-    }
-  }
-
-  async function saveDataToCloud() {
-    const btn = document.getElementById('btnSimpan');
-    btn.disabled = true;
-    btn.innerText = "⏳ Menyimpan...";
-
-    const payload = {
-      namaMasjid: document.getElementById('namaMasjid').value,
-      alamatMasjid: document.getElementById('alamatMasjid').value,
-      fotoMasjid: document.getElementById('fotoMasjid').value,
-      gambarKiri: document.getElementById('gambarKiri').value,
-
-      khatib: document.getElementById('khatib').value,
-      fotoKhatib: document.getElementById('fotoKhatib').value,
-
-      imam: document.getElementById('imam').value,
-      fotoImam: document.getElementById('fotoImam').value,
-
-      muadzin: document.getElementById('muadzin').value,
-      fotoMuadzin: document.getElementById('fotoMuadzin').value,
-
-      runningText: document.getElementById('runningText').value
-    };
-
-    try {
-      const response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
-        method: 'PUT',
-        headers: {
-          "Content-Type": "application/json",
-          "X-Master-Key": MASTER_KEY
+      const payload = {
+        profil: {
+          nama: document.getElementById('namaMasjid').value.trim(),
+          alamat: document.getElementById('alamatMasjid').value.trim()
         },
-        body: JSON.stringify(payload)
-      });
+        runningText: document.getElementById('runningText').value.trim(),
+        pengumuman: document.getElementById('pengumuman').value.trim(),
+        petugasJumat: document.getElementById('petugasJumat').value.trim(),
+        kas: {
+          masuk: Number(document.getElementById('kasMasuk').value) || 0,
+          keluar: Number(document.getElementById('kasKeluar').value) || 0
+        },
+        agenda
+      };
 
-      if (response.ok) {
-        alert("✅ Data berhasil disimpan! Slide foto dan running text akan otomatis tampil di layar display.");
-      } else {
-        const errJson = await response.json();
-        alert("❌ Gagal menyimpan data: " + (errJson.message || response.statusText));
+      try {
+        const res = await fetch(API_URL, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Master-Key": MASTER_KEY
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) throw new Error("Gagal menyimpan ke JSONBin.");
+
+        showAlert("✅ Perubahan berhasil disimpan!");
+      } catch (err) {
+        showAlert(`❌ ${err.message}`, false);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "💾 Simpan Semua Perubahan";
       }
-    } catch (error) {
-      alert("❌ Terjadi kesalahan koneksi: " + error.message);
-    } finally {
-      btn.disabled = false;
-      btn.innerText = "💾 Simpan & Perbarui Display";
     }
-  }
 
-  window.onload = loadDataFromCloud;
-</script>
+    loadAdminData();
+  </script>
 </body>
 </html>

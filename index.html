@@ -1,8 +1,147 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Display Digital Masjid</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Adhan JS library untuk perhitungan presisi koordinat Wedung Demak -->
+  <script src="https://cdn.jsdelivr.net/npm/adhan@4.4.2/Adhan.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow: hidden; height: 100vh; }
+    
+    /* Layout Utama Grid */
+    .app-container { display: flex; height: calc(100vh - 50px); }
+
+    /* Sidebar Kiri (Jadwal Sholat & Tanggal) */
+    .sidebar { width: 24%; background-color: #111; color: #fff; padding: 12px; display: flex; flex-direction: column; justify-content: space-between; }
+    
+    /* Date Box */
+    .date-box { background: #fff; color: #000; text-align: center; border-radius: 8px; padding: 10px 6px; font-weight: bold; margin-bottom: 10px; }
+    #dateMasehi { font-size: 1.0rem; font-weight: 600; text-transform: uppercase; color: #111; }
+    #dateHijri { font-size: 1.0rem; color: #1b5e20; font-weight: 600; margin-top: 2px; }
+
+    /* Prayer List */
+    .prayer-item { background: #1b5e20; border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+    .prayer-name { font-size: 1.5rem; font-weight: 500; }
+    .prayer-time { font-size: 1.5rem; font-weight: 750; color: #ffd700; }
+
+    /* Area Kanan (Main Content) */
+    .main-content { width: 76%; display: flex; flex-direction: column; }
+    
+    /* Header Atas Hijau */
+    .header-bar { background-color: #1b5e20; color: white; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid #ffd700; }
+    
+    /* Header Nama Masjid & Alamat */
+    #dispNamaMasjid { font-size: 2.0rem; font-weight: 750; letter-spacing: 1px; text-shadow: 1px 1px 3px rgba(0,0,0,0.3); }
+    #dispAlamatMasjid { font-size: 1.2rem; font-weight: 500; color: #e8f5e9; margin-top: 2px; }
+    
+    .clock-display { font-size: 2.0rem; font-weight: 750; color: #ffffff; letter-spacing: 2px; }
+
+    /* Container Slideshow */
+    .content-body { flex: 1; background: #ffffff; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+
+    .slide { position: absolute; width: 100%; height: 100%; opacity: 0; transition: opacity 1s ease-in-out; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; }
+    .slide.active { opacity: 1; z-index: 10; }
+
+    /* Item Tampilan Slide */
+    .agenda-title { font-size: 3.2rem; font-weight: 900; color: #111; text-transform: uppercase; }
+    .agenda-pemateri { font-size: 2.4rem; font-weight: bold; color: #1b5e20; margin-top: 10px; }
+    .agenda-waktu { font-size: 1.6rem; font-weight: 600; color: #333; margin-top: 15px; background: #e8f5e9; padding: 10px 24px; border-radius: 8px; }
+
+    .person-img { width: 220px; height: 220px; border-radius: 50%; object-fit: cover; border: 5px solid #1b5e20; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
+    .person-role { font-size: 1.6rem; font-weight: bold; color: #1b5e20; text-transform: uppercase; letter-spacing: 2px; }
+    .person-name { font-size: 2.8rem; font-weight: 800; color: #222; }
+
+    .masjid-img { width: 100%; max-height: 82%; object-fit: cover; border-radius: 12px; border: 4px solid #1b5e20; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
+
+    /* Running Text Bawah */
+    .footer-ticker { background: #000; color: #ffd700; height: 50px; line-height: 50px; font-size: 1.0rem; font-weight: bold; border-top: 2px solid #ffd700; }
+  </style>
+</head>
+<body>
+
+<div class="app-container">
+  <!-- SIDEBAR JADWAL SHOLAT -->
+  <div class="sidebar">
+    <div class="date-box">
+      <!-- Masehi Otomatis -->
+      <div id="dateMasehi">MEMUAT...</div>
+      <!-- Hijriah Otomatis -->
+      <div id="dateHijri">MEMUAT...</div>
+    </div>
+
+    <div class="prayer-list">
+      <div class="prayer-item"><span class="prayer-name">Imsak</span><span class="prayer-time" id="t-imsak">--:--</span></div>
+      <div class="prayer-item"><span class="prayer-name">Subuh</span><span class="prayer-time" id="t-subuh">--:--</span></div>
+      <div class="prayer-item"><span class="prayer-name">Dzuhur</span><span class="prayer-time" id="t-dzuhur">--:--</span></div>
+      <div class="prayer-item"><span class="prayer-name">Ashar</span><span class="prayer-time" id="t-ashar">--:--</span></div>
+      <div class="prayer-item"><span class="prayer-name">Maghrib</span><span class="prayer-time" id="t-maghrib">--:--</span></div>
+      <div class="prayer-item"><span class="prayer-name">Isya</span><span class="prayer-time" id="t-isya">--:--</span></div>
+    </div>
+  </div>
+
+  <!-- AREA UTAMA -->
+  <div class="main-content">
+    <!-- HEADER -->
+    <div class="header-bar">
+      <div>
+        <h2 id="dispNamaMasjid" class="m-0">MASJID BESAR AL FALAH</h2>
+        <p id="dispAlamatMasjid" class="m-0">JL. RAYA KAUMAN WEDUNG DEMAK</p>
+      </div>
+      <div class="clock-display" id="clock">00:00:00</div>
+    </div>
+
+    <!-- CONTENT BODY (SLIDESHOW) -->
+    <div class="content-body">
+      <!-- SLIDE 1: AGENDA / KAJIAN -->
+      <div class="slide active" id="slide1">
+        <div id="dispJudulKajian" class="agenda-title">ASWAJA CENTER</div>
+        <div class="fs-4 text-muted mt-2">Bersama :</div>
+        <div id="dispPemateri" class="agenda-pemateri">ansor ranting wedung</div>
+        <div id="dispWaktuKajian" class="agenda-waktu">malam rabu</div>
+      </div>
+
+      <!-- SLIDE 2: PROFIL KHATIB JUMAT -->
+      <div class="slide" id="slide2">
+        <img id="imgKhatib" src="https://via.placeholder.com/320?text=Foto+Khatib" class="person-img" alt="Khatib">
+        <div class="person-role">KHATIB JUM'AT</div>
+        <div id="dispKhatib" class="person-name">-</div>
+      </div>
+
+      <!-- SLIDE 3: PROFIL IMAM -->
+      <div class="slide" id="slide3">
+        <img id="imgImam" src="https://via.placeholder.com/320?text=Foto+Imam" class="person-img" alt="Imam">
+        <div class="person-role">IMAM MASJID</div>
+        <div id="dispImam" class="person-name">-</div>
+      </div>
+
+      <!-- SLIDE 4: PROFIL BILAL / MUADZIN -->
+      <div class="slide" id="slide4">
+        <img id="imgMuadzin" src="https://via.placeholder.com/320?text=Foto+Bilal" class="person-img" alt="Bilal">
+        <div class="person-role">BILAL / MUADZIN</div>
+        <div id="dispMuadzin" class="person-name">-</div>
+      </div>
+
+      <!-- SLIDE 5: FOTO MASJID -->
+      <div class="slide" id="slide5">
+        <img id="imgMasjid" src="https://via.placeholder.com/600x500?text=Foto+Masjid" class="masjid-img" alt="Masjid">
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER RUNNING TEXT -->
+<div class="footer-ticker">
+  <marquee id="dispRunningText" behavior="scroll" direction="left">MARI KITA MAKMURKAN MASJID AL FALAH...</marquee>
+</div>
+
 <script>
   const BIN_ID = "6ac6e08dffd5d16053579b96";
   const ACCESS_KEY = "$2a$10$2gk94J6Zl6Jz5Pe3OOp7W.AxqAKtSjiTMdFfljEODqXoSSHFBGP8K";
 
-  // Helper untuk Memperbaiki URL Gambar (Imgur & PostImage Direct Link)
+  // Helper untuk Memperbaiki URL Gambar
   function fixImageUrl(url) {
     if (!url) return '';
     let cleanUrl = url.trim();
@@ -32,47 +171,47 @@
   setInterval(updateClockAndMasehi, 1000);
   updateClockAndMasehi();
 
-  // 2. Integrasi Jadwal Sholat Real-time & Hijriah Kemenag/NU
-  // Contoh KOTA_ID: "1609" (Yogyakarta) atau "1107" (Demak). Sesuaikan dengan lokasi masjid.
-  const KOTA_ID = "1107"; // Kabupaten Demak
-  async function updatePrayerTimesAndHijri() {
-    try {
-      const today = new Date();
-      const yyyy = today.getFullYear();
-      const mm = String(today.getMonth() + 1).padStart(2, '0');
-      const dd = String(today.getDate()).padStart(2, '0');
+  // 2. Hitung Waktu Sholat Presisi Koordinat Wedung Demak (Falakiyah NU / Kemenag)
+  function calculateWedungPrayerTimes() {
+    // Koordinat Geografis Wedung, Demak (Lintang: -6.7865, Bujur: 110.5794)
+    const coordinates = new adhan.Coordinates(-6.7865, 110.5794);
+    const date = new Date();
+    
+    // Parameter Perhitungan Kemenag / NU (Subuh 20°, Isya 18°)
+    const params = adhan.CalculationMethod.Singapore(); 
+    params.fajrAngle = 20;
+    params.ishaAngle = 18;
 
-      // Ambil Jadwal Sholat dari API Resmi MyQuran/Kemenag Indonesia
-      const res = await fetch(`https://api.myquran.com/v2/sholat/jadwal/${KOTA_ID}/${yyyy}/${mm}/${dd}`);
-      if (!res.ok) throw new Error("Gagal mengambil jadwal sholat");
-      
-      const json = await res.json();
-      const jadwal = json.data.jadwal;
+    const prayerTimes = new adhan.PrayerTimes(coordinates, date, params);
 
-      // Update Elemen HTML Jadwal Sholat
-      const prayerItems = document.querySelectorAll('.prayer-item');
-      if (prayerItems.length >= 6) {
-        prayerItems[0].querySelector('.prayer-time').innerText = jadwal.imsak;
-        prayerItems[1].querySelector('.prayer-time').innerText = jadwal.subuh;
-        prayerItems[2].querySelector('.prayer-time').innerText = jadwal.dzuhur;
-        prayerItems[3].querySelector('.prayer-time').innerText = jadwal.ashar;
-        prayerItems[4].querySelector('.prayer-time').innerText = jadwal.maghrib;
-        prayerItems[5].querySelector('.prayer-time').innerText = jadwal.isya;
-      }
-
-      // Format Tanggal Hijriah
-      if (jadwal.date) {
-        document.getElementById('dateHijri').innerText = `${jadwal.date}`.toUpperCase();
-      }
-    } catch (err) {
-      console.error("Error Jadwal Sholat / Hijriah:", err);
-      // Fallback jika API bermasalah
-      fetchHijriFallback();
+    // Format Jam:Menit dengan Tambahan Ihtiyat (+2 menit standar NU)
+    function formatTime(timeObj, addMinutes = 2) {
+      if (!timeObj) return "--:--";
+      const adjusted = new Date(timeObj.getTime() + addMinutes * 60000);
+      const h = String(adjusted.getHours()).padStart(2, '0');
+      const m = String(adjusted.getMinutes()).padStart(2, '0');
+      return `${h}:${m}`;
     }
+
+    // Hitung Imsak (10 menit sebelum Subuh)
+    const subuhTime = new Date(prayerTimes.fajr.getTime() + 2 * 60000);
+    const imsakTime = new Date(subuhTime.getTime() - 10 * 60000);
+    const hImsak = String(imsakTime.getHours()).padStart(2, '0');
+    const mImsak = String(imsakTime.getMinutes()).padStart(2, '0');
+
+    document.getElementById('t-imsak').innerText = `${hImsak}:${mImsak}`;
+    document.getElementById('t-subuh').innerText = formatTime(prayerTimes.fajr);
+    document.getElementById('t-dzuhur').innerText = formatTime(prayerTimes.dhuhr);
+    document.getElementById('t-ashar').innerText = formatTime(prayerTimes.asr);
+    document.getElementById('t-maghrib').innerText = formatTime(prayerTimes.maghrib);
+    document.getElementById('t-isya').innerText = formatTime(prayerTimes.isha);
   }
 
-  // Fallback Hijriah dari Aladhan jika koneksi MyQuran kendala
-  async function fetchHijriFallback() {
+  calculateWedungPrayerTimes();
+  setInterval(calculateWedungPrayerTimes, 60000); // Update tiap menit
+
+  // 3. Tanggal Hijriah Otomatis
+  async function updateHijriDate() {
     try {
       const today = new Date();
       const dd = String(today.getDate()).padStart(2, '0');
@@ -80,6 +219,7 @@
       const yyyy = today.getFullYear();
 
       const res = await fetch(`https://api.aladhan.com/v1/gToH/${dd}-${mm}-${yyyy}`);
+      if (!res.ok) throw new Error("Gagal load Hijriah");
       const json = await res.json();
       const hijri = json.data.hijri;
 
@@ -92,16 +232,14 @@
 
       const namaBulan = bulanIndo[hijri.month.en] || hijri.month.en.toUpperCase();
       document.getElementById('dateHijri').innerText = `${hijri.day} ${namaBulan} ${hijri.year} H`;
-    } catch (e) {
-      console.error(e);
+    } catch (err) {
+      console.error("Error Tanggal Hijriah:", err);
+      document.getElementById('dateHijri').innerText = "-";
     }
   }
+  updateHijriDate();
 
-  updatePrayerTimesAndHijri();
-  // Refresh jadwal sholat otomatis setiap 1 jam sekali
-  setInterval(updatePrayerTimesAndHijri, 3600000);
-
-  // 3. Logika Slideshow Otomatis (6 detik)
+  // 4. Logika Slideshow Otomatis (6 detik)
   let currentSlide = 0;
   const slides = document.querySelectorAll('.slide');
 
@@ -112,7 +250,7 @@
   }
   setInterval(nextSlide, 6000);
 
-  // 4. Ambil Data dari JSONBin
+  // 5. Ambil Data dari JSONBin
   async function fetchDisplayData() {
     try {
       const response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
@@ -124,11 +262,11 @@
       const data = await response.json();
 
       if (data && !data.message) {
-        document.getElementById('dispNamaMasjid').innerText = data.namaMasjid || "MASJID JAMI' AT TAQWA";
-        document.getElementById('dispAlamatMasjid').innerText = data.alamatMasjid || "YOGYAKARTA";
-        document.getElementById('dispJudulKajian').innerText = data.judulKajian || "KAJIAN FIQIH";
-        document.getElementById('dispPemateri').innerText = data.pemateri || "-";
-        document.getElementById('dispWaktuKajian').innerText = data.waktuKajian || "-";
+        document.getElementById('dispNamaMasjid').innerText = data.namaMasjid || "MASJID BESAR AL FALAH";
+        document.getElementById('dispAlamatMasjid').innerText = data.alamatMasjid || "JL. RAYA KAUMAN WEDUNG DEMAK";
+        document.getElementById('dispJudulKajian').innerText = data.judulKajian || "ASWAJA CENTER";
+        document.getElementById('dispPemateri').innerText = data.pemateri || "ansor ranting wedung";
+        document.getElementById('dispWaktuKajian').innerText = data.waktuKajian || "malam rabu";
         
         document.getElementById('dispKhatib').innerText = data.khatib || "-";
         if (data.fotoKhatib) document.getElementById('imgKhatib').src = fixImageUrl(data.fotoKhatib);
@@ -141,7 +279,7 @@
 
         if (data.fotoMasjid) document.getElementById('imgMasjid').src = fixImageUrl(data.fotoMasjid);
 
-        document.getElementById('dispRunningText').innerText = data.runningText || "";
+        document.getElementById('dispRunningText').innerText = data.runningText || "MARI KITA MAKMURKAN MASJID AL FALAH...";
       }
     } catch (error) {
       console.error("Gagal mengambil data:", error);
@@ -151,3 +289,5 @@
   fetchDisplayData();
   setInterval(fetchDisplayData, 10000);
 </script>
+</body>
+</html>
